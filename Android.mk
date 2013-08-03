@@ -3,7 +3,7 @@ LOCAL_PATH := $(call my-dir)
 common_cflags := \
 	-DANDROID \
 	-DHAVE_CONFIG_H
-	
+
 
 include $(CLEAR_VARS)
 LOCAL_C_INCLUDES := \
