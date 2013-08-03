@@ -27,7 +27,8 @@ LOCAL_SRC_FILES:= \
         src/openct/proto-t1.c \
         src/tokenparser.c \
         src/strlcpy.c \
-        src/debug.c \
+        src/simclist.c \
+        src/debug.c
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/
 
