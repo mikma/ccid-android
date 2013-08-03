@@ -16,35 +16,18 @@ LOCAL_C_INCLUDES := \
 
 LOCAL_SRC_FILES:= \
 	src/ccid.c \
-        src/ccid.h \
-        src/ccid_ifdhandler.h \
         src/commands.c \
-        src/commands.h \
-        src/debug.h \
-        src/defs.h \
         src/ifdhandler.c \
         src/utils.c \
-        src/utils.h \
         src/ccid_usb.c \
-        src/ccid_usb.h \
         src/towitoko/atr.c \
-        src/towitoko/atr.h \
-        src/towitoko/defines.h \
         src/towitoko/pps.c \
-        src/towitoko/pps.h \
         src/openct/buffer.c \
-        src/openct/buffer.h \
         src/openct/checksum.c \
-        src/openct/checksum.h \
         src/openct/proto-t1.c \
-        src/openct/proto-t1.h \
         src/tokenparser.c \
-        src/parser.h \
         src/strlcpy.c \
-        src/misc.h \
-        src/strlcpycat.h \
         src/debug.c \
-        src/debug.h
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/
 
