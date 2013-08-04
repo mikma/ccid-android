@@ -4,15 +4,14 @@ common_cflags := \
 	-DANDROID \
 	-DHAVE_CONFIG_H
 
+LIBUSB_PATH := $(LOCAL_PATH)/../libusb
 
 include $(CLEAR_VARS)
 LOCAL_C_INCLUDES := \
 	$(LOCAL_PATH) \
 	$(LOCAL_PATH)/src \
-	$(LOCAL_PATH)/../pcsc-lite-1.8.6/src/PCSC \
-	$(LOCAL_PATH)/../pcsc-lite-1.8.6/src/ \
-	$(LOCAL_PATH)/../libusb-1.0.3/libusb \
-	$(LOCAL_PATH)/../libusb-1.0.3/libusb/os
+	$(PCSC_PATH)/src/PCSC \
+	$(LIBUSB_PATH) \
 
 LOCAL_SRC_FILES:= \
 	src/ccid.c \
