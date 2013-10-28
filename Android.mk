@@ -49,6 +49,10 @@ LOCAL_C_INCLUDES := \
 LOCAL_SRC_FILES:= \
         examples/scardcontrol.c \
 
+LOCAL_CFLAGS := \
+	$(common_cflags) \
+	-Dmain=scardcontrol_main
+
 LOCAL_MODULE_TAGS = eng
 LOCAL_MODULE:= libscardcontrol
 LOCAL_LDLIBS := -llog
