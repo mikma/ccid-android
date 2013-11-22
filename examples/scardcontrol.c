@@ -34,6 +34,7 @@
 #include <winscard.h>
 #endif
 #include <reader.h>
+#include <android/log.h>
 
 #undef VERIFY_PIN
 #define MODIFY_PIN
@@ -80,6 +81,16 @@ else \
 
 #define PRINT_GREEN_HEX4(text, value) \
 	printf("%s: " GREEN "0x%04X\n" NORMAL, text, value)
+
+#ifdef ANDROID
+#define TAG "LibUsb"
+int printf(const char *format, ...)
+{
+	va_list ap;
+	va_start(ap, format);
+	return __android_log_vprint(ANDROID_LOG_DEBUG, TAG, format, ap);
+}
+#endif
 
 static void parse_properties(unsigned char *bRecvBuffer, int length)
 {
