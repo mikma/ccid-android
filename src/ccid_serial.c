@@ -20,7 +20,7 @@
  */
 
 /*
- * $Id: ccid_serial.c 6252 2012-03-27 12:58:12Z rousseau $
+ * $Id: ccid_serial.c 6650 2013-06-10 08:43:24Z rousseau $
  */
 
 #include <stdio.h>
@@ -601,6 +601,7 @@ static status_t set_ccid_descriptor(unsigned int reader_index,
 	serialDevice[reader_index].ccid.dwSlotStatus = IFD_ICC_PRESENT;
 	serialDevice[reader_index].ccid.bVoltageSupport = 0x07;	/* 1.8V, 3V and 5V */
 	serialDevice[reader_index].ccid.gemalto_firmware_features = NULL;
+	serialDevice[reader_index].ccid.zlp = FALSE;
 	serialDevice[reader_index].echo = TRUE;
 
 	/* change some values depending on the reader */

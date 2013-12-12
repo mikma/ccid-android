@@ -18,7 +18,7 @@
 */
 
 /*
- * $Id: parse.c 6562 2013-03-06 14:23:22Z rousseau $
+ * $Id: parse.c 6633 2013-05-22 14:11:37Z rousseau $
  */
 
 #include <stdio.h>
@@ -174,7 +174,7 @@ again:
 		if (!class_ff && (0xFF == usb_interface->altsetting->bInterfaceClass))
 		{
 			(void)libusb_close(handle);
-			(void)fprintf(stderr, MAGENTA "  Found a possibly CCID/ICCD device (bInterfaceClass = 0xFF). Use -p\n" NORMAL);
+			(void)fprintf(stderr, MAGENTA "  Found a possibly CCID/ICCD device (bInterfaceClass = 0xFF). Use %s -p\n" NORMAL, argv[0]);
 			continue;
 		}
 		(void)fprintf(stderr,
@@ -206,7 +206,13 @@ again:
 			{
 				(void)fprintf(stderr,
 					BRIGHT_RED " Please, stop pcscd and retry\n\n" NORMAL);
-				return TRUE;
+
+				if (class_ff)
+					/* maybe the device with Class = 0xFF is NOT a CCID
+					 * reader */
+					continue;
+				else
+					return TRUE;
 			}
 			continue;
 		}
@@ -566,7 +572,7 @@ static int ccid_parse_interface_descriptor(libusb_device_handle *handle,
 	(void)printf("  bClassGetResponse: 0x%02X\n", device_descriptor[48]);
 	if (0xFF == device_descriptor[48])
 		(void)printf("   echoes the APDU class\n");
-	(void)printf("  bClassEnveloppe: 0x%02X\n", device_descriptor[49]);
+	(void)printf("  bClassEnvelope: 0x%02X\n", device_descriptor[49]);
 	if (0xFF == device_descriptor[49])
 		(void)printf("   echoes the APDU class\n");
 	(void)printf("  wLcdLayout: 0x%04X\n", (device_descriptor[51] << 8)+device_descriptor[50]);

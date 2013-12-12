@@ -1,16 +1,16 @@
 /*
-    ccid_usb.c: USB access routines using the libusb library
-    Copyright (C) 2003-2010   Ludovic Rousseau
+	ccid_usb.c: USB access routines using the libusb library
+	Copyright (C) 2003-2010	Ludovic Rousseau
 
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Lesser General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
+	This library is free software; you can redistribute it and/or
+	modify it under the terms of the GNU Lesser General Public
+	License as published by the Free Software Foundation; either
+	version 2.1 of the License, or (at your option) any later version.
 
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Lesser General Public License for more details.
+	This library is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+	Lesser General Public License for more details.
 
 	You should have received a copy of the GNU Lesser General Public License
 	along with this library; if not, write to the Free Software Foundation,
@@ -18,7 +18,7 @@
 */
 
 /*
- * $Id: ccid_usb.c 6348 2012-06-20 06:43:28Z rousseau $
+ * $Id: ccid_usb.c 6650 2013-06-10 08:43:24Z rousseau $
  */
 
 #define __CCID_USB__
@@ -45,13 +45,13 @@
 
 /* write timeout
  * we don't have to wait a long time since the card was doing nothing */
-#define USB_WRITE_TIMEOUT (5 * 1000)  /* 5 seconds timeout */
+#define USB_WRITE_TIMEOUT (5 * 1000)	/* 5 seconds timeout */
 
 /*
  * Proprietary USB Class (0xFF) are (or are not) accepted
  * A proprietary class is used for devices released before the final CCID
  * specifications were ready.
- * We should not have problems with non CCID devices becasue the
+ * We should not have problems with non CCID devices because the
  * Manufacturer and Product ID are also used to identify the device */
 #define ALLOW_PROPRIETARY_CLASS
 
@@ -102,9 +102,9 @@ static unsigned int *get_data_rates(unsigned int reader_index,
 /* ne need to initialize to 0 since it is static */
 static _usbDevice usbDevice[CCID_DRIVER_MAX_READERS];
 
-#define PCSCLITE_MANUKEY_NAME                   "ifdVendorID"
-#define PCSCLITE_PRODKEY_NAME                   "ifdProductID"
-#define PCSCLITE_NAMEKEY_NAME                   "ifdFriendlyName"
+#define PCSCLITE_MANUKEY_NAME "ifdVendorID"
+#define PCSCLITE_PRODKEY_NAME "ifdProductID"
+#define PCSCLITE_NAMEKEY_NAME "ifdFriendlyName"
 
 struct _bogus_firmware
 {
@@ -129,6 +129,8 @@ static struct _bogus_firmware Bogus_firmwares[] = {
 	{ 0x0B0C, 0x0050, 0x0101 },	/* Todos Argos Mini II */
 	{ 0x0DC3, 0x0900, 0x0200 }, /* Athena IDProtect Key v2 */
 	{ 0x03F0, 0x0036, 0x0124 }, /* HP USB CCID Smartcard Keyboard */
+	{ 0x062D, 0x0001, 0x0102 }, /* THRC Smart Card Reader */
+	{ 0x04E6, 0x5291, 0x0112 }, /* SCM SCL010 Contactless Reader */
 
 	/* the firmware version is not correct since I do not have received a
 	 * working reader yet */
@@ -280,7 +282,7 @@ status_t OpenUSBByName(unsigned int reader_index, /*@null@*/ char *device)
 	GET_KEYS("ifdFriendlyName", &ifdFriendlyName)
 
 	/* The 3 lists do not have the same size */
-	if  ((list_size(ifdVendorID) != list_size(ifdProductID))
+	if ((list_size(ifdVendorID) != list_size(ifdProductID))
 		|| (list_size(ifdVendorID) != list_size(ifdFriendlyName)))
 	{
 		DEBUG_CRITICAL2("Error parsing %s", infofile);
@@ -574,6 +576,7 @@ again:
 				usbDevice[reader_index].ccid.bVoltageSupport = device_descriptor[5];
 				usbDevice[reader_index].ccid.sIFD_serial_number = NULL;
 				usbDevice[reader_index].ccid.gemalto_firmware_features = NULL;
+				usbDevice[reader_index].ccid.zlp = FALSE;
 				if (desc.iSerialNumber)
 				{
 					unsigned char serial[128];
@@ -646,6 +649,16 @@ status_t WriteUSB(unsigned int reader_index, unsigned int length,
 
 	(void)snprintf(debug_header, sizeof(debug_header), "-> %06X ",
 		(int)reader_index);
+
+	if (usbDevice[reader_index].ccid.zlp)
+	{ /* Zero Length Packet */
+		int dummy_length;
+
+		/* try to read a ZLP so transfer length = 0
+		 * timeout of 1 ms */
+		(void)libusb_bulk_transfer(usbDevice[reader_index].dev_handle,
+			usbDevice[reader_index].bulk_in, NULL, 0, &dummy_length, 1);
+	}
 
 	DEBUG_XXD(debug_header, buffer, length);
 
@@ -748,12 +761,6 @@ status_t CloseUSB(unsigned int reader_index)
 		usbDevice[reader_index].ccid.arrayOfSupportedDataRates = NULL;
 	}
 
-	if (usbDevice[reader_index].ccid.gemalto_firmware_features)
-	{
-		free(usbDevice[reader_index].ccid.gemalto_firmware_features);
-		usbDevice[reader_index].ccid.gemalto_firmware_features = NULL ;
-	}
-
 	/* one slot closed */
 	(*usbDevice[reader_index].nb_opened_slots)--;
 
@@ -761,6 +768,9 @@ status_t CloseUSB(unsigned int reader_index)
 	if (0 == *usbDevice[reader_index].nb_opened_slots)
 	{
 		DEBUG_COMM("Last slot closed. Release resources");
+
+		if (usbDevice[reader_index].ccid.gemalto_firmware_features)
+			free(usbDevice[reader_index].ccid.gemalto_firmware_features);
 
 		if (usbDevice[reader_index].ccid.sIFD_serial_number)
 			free(usbDevice[reader_index].ccid.sIFD_serial_number);
@@ -829,7 +839,8 @@ const unsigned char *get_ccid_device_descriptor(const struct libusb_interface *u
 	 * descriptors; to support those, look for it at the end as well.
 	 */
 	last_endpoint = usb_interface->altsetting->bNumEndpoints-1;
-	if (usb_interface->altsetting->endpoint[last_endpoint].extra_length == 54)
+	if (usb_interface->altsetting->endpoint
+		&& usb_interface->altsetting->endpoint[last_endpoint].extra_length == 54)
 		return usb_interface->altsetting->endpoint[last_endpoint].extra;
 #else
 	DEBUG_CRITICAL2("Extra field has a wrong length: %d",
@@ -962,7 +973,7 @@ int ccid_check_firmware(struct libusb_device_descriptor *desc)
 
 /*****************************************************************************
  *
- *                                      get_data_rates
+ *					get_data_rates
  *
  ****************************************************************************/
 static unsigned int *get_data_rates(unsigned int reader_index,
@@ -1030,7 +1041,7 @@ static unsigned int *get_data_rates(unsigned int reader_index,
 
 /*****************************************************************************
  *
- *                                      ControlUSB
+ *					ControlUSB
  *
  ****************************************************************************/
 int ControlUSB(int reader_index, int requesttype, int request, int value,

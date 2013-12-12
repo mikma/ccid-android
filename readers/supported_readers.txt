@@ -1,6 +1,6 @@
 #
 # List of readers supported by the CCID driver
-# Generated: 2013-04-16
+# Generated: 2013-06-11
 #
 # DO NOT EDIT BY HAND
 
@@ -66,6 +66,7 @@
 0x08E6:0x5504:Gemalto Prox SU USB PC LinkReader
 0x08E6:0x5504:Gemalto Prox SU USB PC LinkReader
 0x08E6:0x8000:Gemalto Smart Enterprise Guardian Secure USB Device
+0x08E6:0x8141:Gemalto IDBridge K3000
 
 # Giesecke & Devrient GmbH
 0x1059:0x0017:Giesecke & Devrient GmbH StarSign Crypto USB Token
@@ -224,6 +225,8 @@
 
 # Gemalto
 0x08E6:0x2202:Gemalto Gem e-Seal Pro USB Token
+0x08E6:0x3437:Gemalto IDBridge CT30
+0x08E6:0x3438:Gemalto IDBridge K30
 0x08E6:0x3478:Gemalto USB GemPCPinpad SmartCard Reader
 0x08E6:0x34C2:Gemalto Ezio Shield
 0x08E6:0x34C5:Gemalto Ezio Shield Branch Reader
@@ -231,7 +234,6 @@
 0x08E6:0x4042:Gemalto SA .NET Dual
 0x08E6:0x5743:Gemalto Hybrid Smartcard Reader
 0x08E6:0x8108:Gemalto Smart Enterprise Guardian Secure USB Device
-0x08E6:0x8141:Gemalto IDBridge K3000
 
 # Gemplus
 0x08E6:0x3479:Gemplus GemCore POS Pro Smart Card Reader
@@ -369,6 +371,8 @@
 0x04E6:0x5120:SCM Microsystems Inc. SCR331-DI USB Smart Card Reader
 0x04E6:0x5121:SCM Microsystems Inc. SDI010 Smart Card Reader
 0x04E6:0x512B:SCM Microsystems Inc. SDI011 Contactless Reader
+0x04E6:0x512C:SCM Microsystems Inc. SDI011 Contactless Reader
+0x04E6:0x5291:SCM Microsystems Inc. SCL010 Contactless Reader
 0x04E6:0x5293:SCM Microsystems Inc. SCL01x Contactless Reader
 0x04E6:0x5410:SCM Microsystems Inc. SCR35xx v2.0 USB SC Reader
 
@@ -456,6 +460,7 @@
 
 # Broadcom Corp
 0x0A5C:0x5801:Broadcom Corp 5880
+0x0A5C:0x5801:Broadcom Corp 5880
 
 # C3PO
 0x0783:0x0003:C3PO LTC3x USB
@@ -482,6 +487,9 @@
 # RSA
 0x15E1:0x2007:RSA RSA SecurID (R) Authenticator
 
+# THRC
+0x062D:0x0001:THRC Smart Card Reader
+
 ##########################
 # section: disabled
 ##########################
@@ -505,12 +513,12 @@
 # SMART
 #0x0B8C:0x000E:SMART SBV280
 
-# THRC
-#0x062D:0x0001:THRC USB Smart Card Reader
-
 ##########################
 # section: duplicates
 ##########################
+#0x04E6:0x5291:SCM Microsystems Inc. SCL010 Contactless Reader (SCL010.txt)
+#0x04E6:0x5291:SCM Microsystems Inc. SCL010 Contactless Reader (SCM_SCL010.txt)
+
 #0x04E6:0x5410:SCM Microsystems Inc. SCR35xx v2.0 USB SC Reader (SCR3500.txt)
 #0x04E6:0x5410:SCM Microsystems Inc. SCR 355 (SCR355.txt)
 
@@ -543,6 +551,12 @@
 #0x076B:0xA022:Precise Biometrics Sense MC (Precise_Sense_MC.txt)
 #0x076B:0xA022:XIRING Teo (Teo.txt)
 
+#0x08E6:0x3437:Gemalto PC Twin Reader (GemPCTwin.txt)
+#0x08E6:0x3437:Gemalto IDBridge CT30 (Gemalto_IDBridge_CT30.txt)
+
+#0x08E6:0x3438:Gemalto USB Shell Token V2 (GemPCKey.txt)
+#0x08E6:0x3438:Gemalto IDBridge K30 (Gemalto_IDBridge_K30.txt)
+
 #0x08E6:0x3478:Gemalto USB GemPCPinpad SmartCard Reader (GemPCPinpad.txt)
 #0x08E6:0x3478:Gemalto USB GemPCPinpad SmartCard Reader (GemPCPinpadv2.txt)
 
@@ -551,6 +565,9 @@
 
 #0x08E6:0x5504:Gemalto Prox SU USB PC LinkReader (GemProxSU.txt)
 #0x08E6:0x5504:Gemalto Prox SU USB PC LinkReader (GemProxSU.txt_i1)
+
+#0x0A5C:0x5801:Broadcom Corp 5880 (Broadcom_5880v2.txt)
+#0x0A5C:0x5801:Broadcom Corp 5880 (Broadcom_5880v2.txt_i1)
 
 #0x0A5C:0x5802:Broadcom Corp 5880 (Broadcom_5880v3.txt)
 #0x0A5C:0x5802:Broadcom Corp 5880 (Broadcom_5880v4.txt)

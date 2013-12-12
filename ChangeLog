@@ -1,3 +1,224 @@
+2013-05-08  Ludovic Rousseau
+
+	* [r6624] src/ifdhandler.c: CreateChannelByNameOrChannel(): fix
+	  clang warning
+	  
+	  ifdhandler.c:142:26: warning: comparison of constant 617 with
+	  expression of type 'status_t' is always false
+	  [-Wtautological-constant-out-of-range-compare] if
+	  (IFD_NO_SUCH_DEVICE == ret) ~~~~~~~~~~~~~~~~~~ ^ ~~~
+	  
+	  Do not mix ret of type status_t with CmdGetSlotStatus() returning
+	  a RESPONSECODE
+
+2013-05-07  Ludovic Rousseau
+
+	* [r6623] src/92_pcscd_ccid.rules: udev rule file: remove support
+	  of Linux kernel < 2.6.35
+	  
+	  USB power management is now only working on Linux kernel >=
+	  2.6.35 Older kernels will just not suspend the smart card reader.
+	* [r6622] src/92_pcscd_ccid.rules: udev rule file: Remove setting
+	  group to pcscd
+	  
+	  Since pcsc-lite 1.8.0 (November 2011) the auto start of pcscd
+	  from the library has been removed. Use systemd instead
+	  
+	  This action in the udev rule file is then useless.
+
+2013-05-04  Ludovic Rousseau
+
+	* [r6620] readers/supported_readers.txt: THRC Smart Card Reader
+	  moved from disabled to unsupported list
+	* [r6618] readers/iDream.txt, src/ccid_usb.c: New firmware of the
+	  THRC reader
+	  
+	  This new firmware _may_ work. Firmware older than 1.02 are marked
+	  as bogus.
+	  
+	  The reader was in the disabled list so old readers will continue
+	  to _not_ work with the driver.
+	* [r6617] src/commands.c: CCID_Receive(): better management of time
+	  extension requests
+	  
+	  The driver now uses the value returned in the time extension
+	  frame to multiply the timeout value. The timeout value may be
+	  bigger than needed but the goal is to timeout _after_ the reader.
+	  
+	  Thanks to Henryk Plötz for the bug report
+
+2013-05-03  Ludovic Rousseau
+
+	* [r6616] readers/GemPCTwin.txt, readers/Gemalto_IDBridge_CT30.txt,
+	  readers/supported_readers.txt: Add Gemalto IDBridge CT30 in the
+	  Unsupported list
+	  
+	  This reader is an GemPC Twin with a new chipset and firmware
+	  (version E)
+
+2013-04-26  Ludovic Rousseau
+
+	* [r6614] readers/Broadcom_5880v2.txt: Update with contactless
+	  interface enabled
+	  http://ridrix.wordpress.com/2009/10/13/how-to-enable-pcsc-support-for-dell-contactless-reader/
+
+2013-04-16  Ludovic Rousseau
+
+	* [r6609] README, configure.ac: Release 1.4.10
+	* [r6608] readers/supported_readers.txt: Regenerate using composite
+	  readers
+
+2013-04-15  Ludovic Rousseau
+
+	* [r6605] readers/CardMan3821.txt, readers/CherryXX33.txt,
+	  readers/CherryXX44.txt, readers/GemPC433_SL.txt,
+	  readers/SCR331-DI-NTTCom.txt, readers/Verisign_secure_token.txt,
+	  readers/Winbond.txt: Normalize file
+	* [r6604] readers/Identive_CLOUD_4710_F.txt,
+	  readers/supported_readers.txt: Add Identive CLOUD 4710 F
+	  Contactless + SAM Reader
+	* [r6603] readers/Identive_CLOUD_4700_F.txt,
+	  readers/supported_readers.txt: Add Identive CLOUD 4700 F Dual
+	  Interface Reader
+	* [r6602] readers/Identive_CLOUD_4510_F.txt,
+	  readers/supported_readers.txt: Add Identive CLOUD 4510 F
+	  Contactless + SAM Reader
+	* [r6601] readers/Identive_CLOUD_4500_F.txt,
+	  readers/supported_readers.txt: Add Identive CLOUD 4500 F Dual
+	  Interface Reader
+	* [r6600] readers/Identive_CLOUD_2700_R.txt,
+	  readers/supported_readers.txt: Add Identive CLOUD 2700 R Smart
+	  Card Reader
+	* [r6599] readers/Identive_CLOUD_2700_F.txt,
+	  readers/supported_readers.txt: Add Identive CLOUD 2700 F Smart
+	  Card Reader
+	* [r6598] readers/CherryXX33.txt, readers/CherryXX44.txt,
+	  readers/GemPC433_SL.txt, readers/SCR331-DI-NTTCom.txt,
+	  readers/Verisign_secure_token.txt: Normalize values in hex or
+	  decimal
+
+2013-04-12  Ludovic Rousseau
+
+	* [r6597] readers/Inside_Secure_AT90SCR200.txt,
+	  readers/supported_readers.txt: Add Inside Secure AT90SCR200
+	* [r6596] readers/Inside_Secure_AT90SCR100.txt,
+	  readers/supported_readers.txt: Add Inside Secure AT90SCR100
+	* [r6595] readers/Inside_Secure_AT90SCR050.txt,
+	  readers/supported_readers.txt: Add Inside Secure AT90SCR050
+
+2013-04-09  Ludovic Rousseau
+
+	* [r6590] readers/Gemalto_IDBridge_K3000.txt,
+	  readers/supported_readers.txt: Add Gemalto IDBridge K3000
+
+2013-04-05  Ludovic Rousseau
+
+	* [r6587] src/92_pcscd_ccid.rules: Add SCR3310-NTTCom USB SmartCard
+	  Reader which uses bInterfaceClass: 0xFF
+	  
+	  Thanks to Hiroyuki Yamamoto for the patch Closes Debian bug
+	  #704673
+
+2013-04-04  Ludovic Rousseau
+
+	* [r6586] readers/Morpho_MSO1350.txt,
+	  readers/supported_readers.txt: Add Morpho MSO1350 Fingerprint
+	  Sensor & SmartCard Reader
+	* [r6585] readers/Morpho_MSO350.txt, readers/supported_readers.txt:
+	  Add Morpho MSO350/MSO351 Fingerprint Sensor & SmartCard Reader
+
+2013-03-14  Ludovic Rousseau
+
+	* [r6570] src/commands.c: Add support of time extension for Escape
+	  commands
+	  
+	  An CCID Escape command can now use the time extension request
+	  mechanism to ask for more time.
+	  
+	  Fixes Alioth bug [#314061] Time extension request and escape
+	  command
+	  
+	  Thanks to Rachid HARBI-ASSYSTEM for the feature request
+
+2013-03-12  Ludovic Rousseau
+
+	* [r6569] readers/Yubico_Yubikey_neo.txt,
+	  readers/supported_readers.txt: Add Yubico Yubikey NEO CCID
+	* [r6567] readers/Yubico_Yubikey_neo.txt,
+	  readers/Yubico_Yubikey_neo_otp.txt: Rename descriptor
+	* [r6566] examples/scardcontrol.c: Check the value returned by
+	  fgets(3)
+	  
+	  Fix compiler warning: ignoring return value of ‘fgets’, declared
+	  with attribute warn_unused_result [-Wunused-result]
+
+2013-03-06  Ludovic Rousseau
+
+	* [r6565] src/openct/proto-t1.c: cppcheck: Variable 'sent_length'
+	  is assigned a value that is never used.
+	* [r6564] src/openct/proto-t1.c: cppcheck: The scope of the
+	  variable 'm' can be reduced.
+	* [r6563] src/ifdhandler.c: cppcheck: The scope of the variable 'i'
+	  can be reduced.
+	* [r6562] src/parse.c: cppcheck: Variable 'interface' is assigned a
+	  value that is never used.
+	* [r6561] src/commands.c: cppcheck: The scope of the variable
+	  'voltage_code' can be reduced.
+	* [r6560] src/commands.c: cppcheck: The scope of the variable
+	  'count' can be reduced.
+
+2013-03-01  Ludovic Rousseau
+
+	* [r6548] readers/SafeTech_SafeTouch.txt,
+	  readers/supported_readers.txt: Add SafeTech SafeTouch
+	* [r6541] readers/SpringCard_H663_Series.txt,
+	  readers/supported_readers.txt: Add SpringCard H663 Series
+	* [r6540] readers/SpringCard_H512_Series.txt,
+	  readers/supported_readers.txt: Add SpringCard H512 Series
+	* [r6539] readers/SpringCard_NFC_Roll.txt: New firmware (1.71) for
+	  SpringCard NFC'Roll
+
+2013-02-18  Ludovic Rousseau
+
+	* [r6533] readers/ACS_APG8201_v2.txt,
+	  readers/supported_readers.txt: Add ACS APG8201 USB Reader with
+	  PID 0x8202
+
+2013-02-17  Ludovic Rousseau
+
+	* [r6530] readers/GIS_SmartMouse.txt,
+	  readers/supported_readers.txt: Add GIS Ltd SmartMouse USB
+
+2013-02-15  Ludovic Rousseau
+
+	* [r6528] src/create_Info_plist.pl: Add a missing "; to terminate a
+	  string
+	  
+	  The bug was introduced in revision 6518.
+
+2013-01-31  Ludovic Rousseau
+
+	* [r6521] readers/Yubico_Yubikey_neo.txt,
+	  readers/supported_readers.txt: Add Yubico Yubikey NEO OTP+CCID
+
+2013-01-27  Ludovic Rousseau
+
+	* [r6518] src/Info.plist.src, src/Makefile.am,
+	  src/create_Info_plist.pl: Remove the duplicate CFBundleExecutable
+	  from Info.plist
+	  
+	  CFBundleExecutable key was used 2 times: - The first occurence
+	  stored the bundle name (ifd-ccid.bundle) - The second occurence
+	  stored the executable name (libccid.so or .dylib)
+	  
+	  The bundle name is not usefull and has been present since
+	  revision 3458 (April 2009)
+
+2013-01-22  Ludovic Rousseau
+
+	* [r6512] readers/SpringCard_NFC_Roll.txt,
+	  readers/supported_readers.txt: Add SpringCard NFC'Roll
+
 2013-01-16  Ludovic Rousseau
 
 	* [r6507] README, configure.ac: Release 1.4.9

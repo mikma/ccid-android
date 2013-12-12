@@ -18,7 +18,7 @@
 */
 
 /*
- * $Id: ccid.h 6306 2012-05-19 08:11:56Z rousseau $
+ * $Id: ccid.h 6650 2013-06-10 08:43:24Z rousseau $
  */
 
 typedef struct
@@ -141,6 +141,11 @@ typedef struct
 	 * Gemalto extra features, if any
 	 */
 	struct GEMALTO_FIRMWARE_FEATURES *gemalto_firmware_features;
+
+	/*
+	 * Zero Length Packet fixup (boolean)
+	 */
+	char zlp;
 } _ccid_descriptor;
 
 /* Features from dwFeatures */
