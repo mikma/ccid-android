@@ -1,4 +1,4 @@
-# $Id: Makefile.am 6518 2013-01-27 11:21:23Z rousseau $
+# $Id: Makefile.am 6664 2013-06-18 09:07:58Z rousseau $
 
 CCID_BUNDLE = $(bundle)
 CCID_LIB = libccid.$(DYN_LIB_EXT)
@@ -91,8 +91,8 @@ install_ccid: libccid.la Info.plist
 install_ccidtwin: libccidtwin.la
 	$(mkinstalldirs) $(DESTDIR)$(ccidtwindir)
 	cp .libs/$(CCIDTWIN_LIB) $(DESTDIR)$(ccidtwindir)/$(CCIDTWIN_LIB)
-	$(mkinstalldirs) $(DESTDIR)/$(sysconfdir)/reader.conf.d ; \
-		perl -ne "s|TARGET|$(ccidtwindir)/$(CCIDTWIN_LIB)| ; print" $(srcdir)/reader.conf.in > $(DESTDIR)/$(sysconfdir)/reader.conf.d/libccidtwin
+	$(mkinstalldirs) $(DESTDIR)/$(serialconfdir) ; \
+		perl -ne "s|TARGET|$(ccidtwindir)/$(CCIDTWIN_LIB)| ; print" $(srcdir)/reader.conf.in > $(DESTDIR)/$(serialconfdir)/libccidtwin
 
 # do not uninstall the serial driver by default
 # use explicitely 'make uninstall_ccidtwin'

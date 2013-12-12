@@ -17,7 +17,7 @@
 #    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 #    02110-1301 USA.
 
-# $Id: configure 6464 2012-09-14 07:44:30Z rousseau $
+# $Id: configure 6667 2013-06-20 07:37:18Z rousseau $
 
 # to use
 # ./MacOSX/configure
@@ -81,7 +81,8 @@ CONFIGURE_ARGS="$CONFIGURE_ARGS --disable-pcsclite"
 CONFIGURE_ARGS="$CONFIGURE_ARGS --enable-composite-as-multislot"
 
 # use a specific bundle name to NOT overwrite the official CCID driver
-#CONFIGURE_ARGS="$CONFIGURE_ARGS --enable-bundle=ifd-ccid-foobar.bundle"
+#CONFIGURE_ARGS="$CONFIGURE_ARGS --disable-class"
+#CONFIGURE_ARGS="$CONFIGURE_ARGS --enable-bundle=ifd-ccid-vendor-reader.bundle"
 
 set -x
 ./configure \

@@ -1,3 +1,413 @@
+2013-08-12  Ludovic Rousseau
+
+	* [r6729] README, configure.ac: Release 1.4.12
+	* [r6728] readers/SecuTech_Token.txt,
+	  readers/supported_readers.txt: Add SecuTech SecuTech Token
+
+2013-08-08  Ludovic Rousseau
+
+	* [r6720] readers/HID_OMNIKEY_5427_CK.txt,
+	  readers/supported_readers.txt: Add HID OMNIKEY 5427 CK
+
+2013-08-05  Ludovic Rousseau
+
+	* [r6715] readers/Ingenico_WITEO_badge.txt,
+	  readers/Ingenico_WITEO_base.txt, readers/supported_readers.txt:
+	  Add Ingenico WITEO USB Smart Card Reader (Base and Badge)
+	* [r6714] readers/supported_readers.txt: Regenerate without the
+	  duplicates as entries
+
+2013-08-02  Ludovic Rousseau
+
+	* [r6705] readers/Lenovo2.txt, readers/supported_readers.txt: Add
+	  Lenovo Lenovo USB Smartcard Keyboard
+
+2013-07-28  Ludovic Rousseau
+
+	* [r6689] readers/HID_OMNIKEY_5326_DFR.txt,
+	  readers/supported_readers.txt: Add HID OMNIKEY 5326 DFR
+
+2013-07-06  Ludovic Rousseau
+
+	* [r6688] readers/ACR122U_PICC.txt: Firmware upgrade
+	* [r6686] readers/Omnikey_5127_CK.txt,
+	  readers/supported_readers.txt: Add HID OMNIKEY 5127 CK
+
+2013-07-05  Ludovic Rousseau
+
+	* [r6685] src/ifdhandler.c: CreateChannelByNameOrChannel():
+	  correctly fails if the reader disapears
+	  
+	  If we get the error IFD_NO_SUCH_DEVICE then we must exit using
+	  the error path and not directly with a return. We need to unlock
+	  a mutex and free allocated resources.
+	  
+	  Thanks to coverity.
+	* [r6684] src/towitoko/atr.c: ATR_InitFromArray(): avoid a possible
+	  buffer overflow
+	  
+	  Increment the protocol index _before_ checking it is too big.
+
+2013-07-01  Ludovic Rousseau
+
+	* [r6682] src/ccid_usb.c: Code factorisation
+	* [r6681] src/ccid_usb.c: CloseUSB(): free
+	  arrayOfSupportedDataRates on the last slot close
+	  
+	  Do free .ccid.arrayOfSupportedDataRates array only when the last
+	  slot is closed.
+	  
+	  Multi-slot readers share the same .ccid.arrayOfSupportedDataRates
+	  array.
+	  
+	  The GEMCOREPOSPRO and GEMCORESIMPRO are an exception and are not
+	  correctly managed by this patch (memory may leak).
+
+2013-06-30  Ludovic Rousseau
+
+	* [r6678] src/ccid_usb.c, src/ifdhandler.c: Add support of
+	  multi-slot readers
+	  
+	  Thanks to Johann Dantant for the initial patch
+	* [r6677] src/ccid_usb.c: ReadUSB(): check libusb return value for
+	  LIBUSB_ERROR_NO_DEVICE
+	  
+	  Same change as in revision 6676 but for ReadUSB().
+	* [r6676] src/ccid_usb.c: WriteUSB(): check return value for
+	  LIBUSB_ERROR_NO_DEVICE
+	  
+	  If the device is removed we check for ENODEV == errno and now
+	  also for LIBUSB_ERROR_NO_DEVICE == rv (libusb_bulk_transfer()
+	  return value)
+	  
+	  Only the value returned by libusb_bulk_transfer() should be used
+	  in the futur.
+
+2013-06-28  Ludovic Rousseau
+
+	* [r6675] src/ccid_usb.c: close_libusb_if_needed(): Reset ctx value
+	  to NULL
+	  
+	  Make sure libusb_init() will be called for the next reader.
+	  
+	  This was not a real problem since pcscd will unload the driver
+	  when no more reader is using it.
+	* [r6674] src/ccid_usb.c: Call libusb_exit() when needed
+	  
+	  Starting with libusbx 1.0.16 a hotplug thread is created by
+	  libusb. We must cleanly stop the thread or bad thing can happen
+	  (crash on Mac OS X for exampple)
+	* [r6673] configure.ac: Check libusb is at least at version 1.0.8
+	  
+	  The driver will need to use libusb_exit() for libusbx >= 1.0.16
+	  because of the libusb hotplug thread.
+	  
+	  libusb_exit() was not working correctly in libusb < 1.0.8.
+	  
+	  So we check the libusb library used will at least provide a
+	  working libusb_exit() function.
+	* [r6672] configure.ac: Remove libusb-config use
+	  
+	  libusb-config was provided by libusb-0.1. We do not use this
+	  version of the libusb API since version libccid 1.4.0 (August
+	  2010)
+
+2013-06-20  Ludovic Rousseau
+
+	* [r6667] MacOSX/configure: Update the bundle name template to
+	  include the vendor name
+	  
+	  The bundle name template is now ifd-ccid-vendor-reader.bundle
+	* [r6666] MacOSX/configure: Disable class driver on Mac OS X
+	  
+	  - we are building for a specific reader - pcsc-lite on Mac OS X
+	  do not yet support "class" driver
+
+2013-06-18  Ludovic Rousseau
+
+	* [r6664] configure.ac, src/Makefile.am: Use serialconfdir from
+	  pcsc-lite
+	  
+	  Get the serialconfdir value from pcsc-lite pkg config instead of
+	  using $(DESTDIR)/$(sysconfdir)/reader.conf.d/
+
+2013-06-12  Ludovic Rousseau
+
+	* [r6661] ylwrap: Update from automake 1.13
+	* [r6659] README, configure.ac: Release 1.4.11
+
+2013-06-11  Ludovic Rousseau
+
+	* [r6658] readers/supported_readers.txt: Move Gemalto IDBridge
+	  K3000 from "should work" to "supported"
+
+2013-06-10  Ludovic Rousseau
+
+	* [r6656] readers/supported_readers.txt: Move Gemalto IDBridge CT30
+	  from "unsupported" to "should work" list
+	* [r6655] readers/supported_readers.txt: Add Gemalto IDBridge K30
+	* [r6652] readers/Gemalto_IDBridge_K30.txt: New firmware and new
+	  name of the Gemalto USB Shell Token V2
+	* [r6651] readers/DellSCRK.txt: New firmware (2.0)
+	* [r6650] src/ccid.c, src/ccid.h, src/ccid_serial.c,
+	  src/ccid_usb.c: Add Zero Length Packet (ZLP) support for Gemalto
+	  IDBridge CT30 and K30
+	  
+	  The Gemalto IDBridge CT30 and IDBridge K30 readers may send a ZLP
+	  after some commands when connected on a USB3 bus. Only the
+	  readers with firmware 2.00 have the problem.
+	  
+	  The solution is to use a short read before every USB write.
+
+2013-06-03  Ludovic Rousseau
+
+	* [r6646] src/debug.c: Reset color after time value
+	  
+	  Fix a bug introduced in revision 6644.
+	* [r6645] src/debug.c: Do not do colorization when not available.
+	  
+	  Check code was missing in revision 6644.
+	* [r6644] src/debug.c: Add colorization of logs
+	  
+	  This log API is used when pcsc-lite do not provide it i.e. on Mac
+	  OS X.
+	  
+	  The colorization should happen only when the logs are displayed
+	  on a terminal and not when sent in a log file. The main use is
+	  with the handler_test application.
+
+2013-05-31  Ludovic Rousseau
+
+	* [r6643] src/ccid_usb.c: get_ccid_device_descriptor(): check
+	  endpoint[] before access
+	  
+	  Some non-CCID devices with bInterfaceClass = 0xFF may make the
+	  code crash because they do not have endpoints.
+	  
+	  This may happens using 'parse -p' to parse non CCID devices.
+	* [r6641] readers/ACR122U.txt, readers/ACR122U_PICC.txt,
+	  readers/ACR38U-CCID.txt, readers/ACS_ACR100.txt,
+	  readers/ACS_ACR101.txt, readers/ACS_ACR38_plugin.txt,
+	  readers/ACS_AET65.txt, readers/ACS_APG8201.txt,
+	  readers/ACS_APG8201_v2.txt, readers/ACS_CryptoMate64.txt,
+	  readers/ASEDrive_IIIe_KB.txt, readers/ASE_IIIe.txt,
+	  readers/ATMEL_AT90SCR050.txt, readers/ATMEL_AT90SCR100.txt,
+	  readers/ATMEL_AT91SC192192CT-USB.txt, readers/ATMEL_AT91SO.txt,
+	  readers/ATMEL_AT98SC032CT.txt, readers/ATMEL_VaultIC420.txt,
+	  readers/ATMEL_VaultIC440.txt, readers/ATMEL_VaultIC460.txt,
+	  readers/AU9520.txt, readers/AU9540.txt, readers/ActivCardV2.txt,
+	  readers/ActivCardV3.txt, readers/ActivkeySim.txt,
+	  readers/Akasa_AK-CR-03.txt, readers/Aktiv_Rutoken_ECP.txt,
+	  readers/Aktiv_Rutoken_Lite.txt,
+	  readers/Aktiv_Rutoken_Magistra.txt,
+	  readers/Aladdin_eToken_PRO_USB_72K_Java.txt,
+	  readers/AlcorMicro_AU9522.txt, readers/Alcor_SCR001.txt,
+	  readers/Alya.txt, readers/Ask_CPL108.txt,
+	  readers/Athena_IDProtect_Key.txt,
+	  readers/Avtor_SC_Reader_371.txt, readers/Avtor_SecureToken.txt,
+	  readers/AxaltoV3.txt, readers/BIFIT_USB-Token_iBank2key.txt,
+	  readers/BIFIT_iBank2key.txt, readers/BZH_uKeyCI800-K1.txt,
+	  readers/BludriveII.txt, readers/Broadcom_5880.txt,
+	  readers/Broadcom_5880v2.txt, readers/Broadcom_5880v3.txt,
+	  readers/Broadcom_5880v4.txt, readers/C3PO_KBR36.txt,
+	  readers/C3PO_LTC32_USBv2.txt, readers/C3PO_TLTC2USB.txt,
+	  readers/CCB_eSafeLD.txt, readers/CardMan1021.txt,
+	  readers/CardMan3021.txt, readers/CardMan3121.txt,
+	  readers/CardMan3621.txt, readers/CardMan3821.txt,
+	  readers/CardMan4321.txt, readers/CardMan5121.txt,
+	  readers/CardMan5125.txt, readers/CardMan5321.txt,
+	  readers/CardMan6121.txt, readers/Charismathics.txt,
+	  readers/CherryST1044U.txt, readers/CherrySmartBoardXX1X.txt,
+	  readers/CherrySmartTerminalST2XXX.txt,
+	  readers/CherrySmartTerminalXX1X.txt,
+	  readers/CherrySmartTerminalXX7X.txt, readers/CherryXX33.txt,
+	  readers/CherryXX44.txt, readers/Covadis_Auriga.txt,
+	  readers/CryptoIdentity.txt, readers/Dectel_CI692.txt,
+	  readers/DellSCRK.txt, readers/DellSK-3106.txt,
+	  readers/Eutron_CryptoIdentity.txt,
+	  readers/Eutron_Digipass_860.txt,
+	  readers/Eutron_SIM_Pocket_Combo_(Card_Reader).txt,
+	  readers/Eutron_SIM_Pocket_Combo_(SIM_Reader).txt,
+	  readers/Eutron_Smart_Pocket.txt, readers/Feitian_SCR301.txt,
+	  readers/Feitian_SCR310.txt, readers/Feitian_ePass2003_PKI.txt,
+	  readers/Fsij_gnuk.txt,
+	  readers/FujitsuSiemens_SmartCard_Keyboard_USB_2A.txt,
+	  readers/FujitsuSiemens_SmartCard_USB_2A.txt,
+	  readers/FujitsuTechnologySolutions_SmartCase_KB_SCR_eSIG.txt,
+	  readers/GIS_SmartMouse.txt, readers/GPFCryptoStick.txt,
+	  readers/GemCorePOSPro.txt, readers/GemCoreSIMPro.txt,
+	  readers/GemPC433_SL.txt, readers/GemPCKey.txt,
+	  readers/GemPCPinpad.txt, readers/GemPCPinpadv2.txt,
+	  readers/GemPCTwin.txt, readers/GemPC_Express.txt,
+	  readers/GemProxDU.txt, readers/GemProxSU.txt,
+	  readers/Gem_e-SealPro.txt,
+	  readers/GemaltoSmartEnterpriseGuardian.txt,
+	  readers/Gemalto_Ezio_Branch.txt, readers/Gemalto_Ezio_CB+.txt,
+	  readers/Gemalto_Ezio_Shield.txt,
+	  readers/Gemalto_Ezio_Shield_PinPad.txt,
+	  readers/Gemalto_HybridSmartcardReader.txt,
+	  readers/Gemalto_IDBridge_CT30.txt,
+	  readers/Gemalto_IDBridge_K3000.txt, readers/Gemalto_PDT.txt,
+	  readers/Gemalto_SA_dotNet_Dual.txt, readers/Gemalto_SG.txt,
+	  readers/GnD_StarSignCardToken350.txt,
+	  readers/GnD_StarSignCardToken550.txt,
+	  readers/GnD_StarSign_CUT.txt, readers/GoldKey_PIV_Token.txt,
+	  readers/HPUSBSmartCardKeyboard.txt,
+	  readers/HPUSBSmartCardReader.txt,
+	  readers/HP_MFP_SmartCardReader.txt, readers/HP_kus-0133.txt,
+	  readers/Identive_CLOUD_2700_F.txt,
+	  readers/Identive_CLOUD_2700_R.txt,
+	  readers/Identive_CLOUD_4500_F.txt,
+	  readers/Identive_CLOUD_4510_F.txt,
+	  readers/Identive_CLOUD_4700_F.txt,
+	  readers/Identive_CLOUD_4710_F.txt,
+	  readers/Inside_Secure_AT90SCR050.txt,
+	  readers/Inside_Secure_AT90SCR100.txt,
+	  readers/Inside_Secure_AT90SCR200.txt,
+	  readers/Inside_Secure_VaultIC_420.txt,
+	  readers/Inside_Secure_VaultIC_440.txt,
+	  readers/Inside_Secure_VaultIC_460_Smart_Object.txt,
+	  readers/JCOP41V221.txt, readers/KAAN_Advanced.txt,
+	  readers/KAAN_Base.txt, readers/KAAN_SIM_III.txt,
+	  readers/KEBTechnology_KONA_USB_SmartCard.txt,
+	  readers/Kingtrust_Multi-Reader.txt, readers/Kobil_EMV_CAP.txt,
+	  readers/Kobil_IDToken.txt, readers/Kobil_Smart_Token.txt,
+	  readers/Kobil_mIDentity_4smart.txt,
+	  readers/Kobil_mIDentity_4smart_AES.txt,
+	  readers/Kobil_mIDentity_fullsize.txt,
+	  readers/Kobil_mIDentity_fullsize_AES.txt,
+	  readers/Kobil_mIDentity_visual.txt, readers/LTC31.txt,
+	  readers/LTC31v2.txt, readers/LTC36.txt, readers/Lenovo.txt,
+	  readers/MSI_StarReader_SMART.txt,
+	  readers/MX5_SMART_CCID_DRIVER.txt,
+	  readers/Macally_NFC_CCID_eNetPad.txt, readers/Morpho_MSO1350.txt,
+	  readers/Morpho_MSO350.txt, readers/MySmartPad.txt,
+	  readers/NXP_PR533.txt, readers/Neowave_Weneo.txt,
+	  readers/Neowave_Weneo2.txt, readers/Neowave_Weneo3.txt,
+	  readers/Neowave_Weneo4.txt, readers/Oberthur-CosmoCard.txt,
+	  readers/Oberthur-CosmoCard1.txt,
+	  readers/Oberthur-ID-ONE_token_slim_v2.txt,
+	  readers/Omnikey_6321.txt, readers/Omnikey_noname1.txt,
+	  readers/Oz776S.txt, readers/Oz776_7772.txt,
+	  readers/Panasonic_USB_Smart_Card_Reader_7A-Smart.txt,
+	  readers/Philips_SmartMX.txt, readers/Precise_200_MC.txt,
+	  readers/Precise_250_MC.txt, readers/Precise_Sense_MC.txt,
+	  readers/Raritan_D2CIM-DVUSB.txt, readers/ReinerSCT.txt,
+	  readers/ReinerSCT_cyberJack_RFID_basis.txt,
+	  readers/ReinerSCT_cyberJack_go.txt,
+	  readers/Rutoken_PINPad_ex.txt, readers/Rutoken_PINPad_in.txt,
+	  readers/SCL010.txt, readers/SCL01x.txt, readers/SCM_SCL010.txt,
+	  readers/SCM_SCL011.txt, readers/SCM_SDI011.txt,
+	  readers/SCM_SDI011_512C.txt, readers/SCR331-DI-NTTCom.txt,
+	  readers/SCR331-DI.txt, readers/SCR331.txt,
+	  readers/SCR3310-NTTCom.txt, readers/SCR3310.txt,
+	  readers/SCR3310_2.txt, readers/SCR3311.txt, readers/SCR3320.txt,
+	  readers/SCR333.txt, readers/SCR3340.txt, readers/SCR335.txt,
+	  readers/SCR3500.txt, readers/SCR355.txt, readers/SDI010.txt,
+	  readers/SDS4ID_DominoKeyPro_100.txt, readers/SPR532.txt,
+	  readers/SafeTech_SafeTouch.txt, readers/Sitecom_MD-010.txt,
+	  readers/Smart_SBV280.txt, readers/Softforum_XecureHSM.txt,
+	  readers/SpringCard_CSB6_Basic.txt,
+	  readers/SpringCard_CSB6_Secure.txt,
+	  readers/SpringCard_CSB6_Ultimate.txt,
+	  readers/SpringCard_CrazyWriter.txt,
+	  readers/SpringCard_EasyFinger_Standard.txt,
+	  readers/SpringCard_EasyFinger_Ultimate.txt,
+	  readers/SpringCard_H512_Series.txt,
+	  readers/SpringCard_H663_Series.txt,
+	  readers/SpringCard_NFC_Roll.txt,
+	  readers/SpringCard_Prox_N_Roll.txt, readers/Synnix_STD200.txt,
+	  readers/Teo.txt, readers/Teridian_TSC12xxFV.09.txt,
+	  readers/TianYu_CCID_SmartKey.txt,
+	  readers/Tianyu_Smart_Card_Reader.txt,
+	  readers/Todos_AGM2_CCID.txt, readers/Todos_Cx00.txt,
+	  readers/Ubisys_RFID.txt, readers/VMware_Virtual_USB_CCID.txt,
+	  readers/Validy_TokenA.txt,
+	  readers/Vasco_DIGIPASS_KEY_202_0120.txt,
+	  readers/Vasco_DIGIPASS_KEY_202_0122.txt, readers/Vasco_DP200.txt,
+	  readers/Vasco_DP855.txt, readers/Vasco_DP860.txt,
+	  readers/Vasco_DP865.txt, readers/Vasco_DP905.txt,
+	  readers/Vasco_DPKey101.txt, readers/Vasco_DPKey200.txt,
+	  readers/Vasco_DPKey860.txt, readers/Vasco_Digipass920.txt,
+	  readers/Vega-Alpha.txt,
+	  readers/Verisign_secure_storage_token.txt,
+	  readers/Verisign_secure_token.txt, readers/Winbond.txt,
+	  readers/Xiring_Leov2.txt, readers/Xiring_MyLeo.txt,
+	  readers/Xiring_XI-SIGN.txt, readers/Xiring_XI-SIGN_6000.txt,
+	  readers/Yubico_Yubikey_neo.txt,
+	  readers/Yubico_Yubikey_neo_otp.txt, readers/bit4id_cryptokey.txt,
+	  readers/bit4id_iam.txt, readers/bit4id_key4.txt,
+	  readers/bit4id_minilector-s.txt, readers/bit4id_minilector.txt,
+	  readers/e-gate.txt, readers/iDream.txt, readers/iMONO.txt,
+	  readers/id3_CL1356A_HID.txt, readers/id3_CL1356T.txt,
+	  readers/id3_CL1356T5.txt, readers/jNet_jToken_s1.txt,
+	  readers/mIDentity.txt, readers/mIDentityXL.txt,
+	  readers/sid800.txt: Fix typo
+	  
+	  bClassEnveloppe: -> bClassEnvelope: only one 'p'
+
+2013-05-30  Ludovic Rousseau
+
+	* [r6640] src/ccid_usb.c: Fix typo in comment
+
+2013-05-24  Ludovic Rousseau
+
+	* [r6635] src/ccid_usb.c: CloseUSB(): free the
+	  gemalto_firmware_features only on the last slot
+	  
+	  All the slots of a same reader use the same
+	  gemalto_firmware_features structure. We should only free the
+	  structure when the last slot is closing.
+	* [r6634] src/ccid_usb.c: Replace doubles spaces by tabulations
+
+2013-05-22  Ludovic Rousseau
+
+	* [r6633] src/parse.c: Fix typo in field name
+	  
+	  bClassEnveloppe -> bClassEnvelope (only 1 'p')
+
+2013-05-17  Ludovic Rousseau
+
+	* [r6632] readers/SCM_SDI011_512C.txt,
+	  readers/supported_readers.txt: Add SCM Microsystems Inc. SDI011
+	  Contactless Reader
+	  
+	  This SDI011 has a new idProduct: 0x512C
+
+2013-05-16  Ludovic Rousseau
+
+	* [r6631] src/ccid_usb.c: ReadUSB: Zero Length Packet (ZLP) support
+	  
+	  The Gemalto IDBridge CT30 and IDBridge K30 readers may send a ZLP
+	  after some commands when connected on a USB3 bus
+
+2013-05-15  Ludovic Rousseau
+
+	* [r6630] src/parse.c: Do not exit if a device with class 0xFF is
+	  not accessible
+	  
+	  Maybe the device is NOT a CCID reader and the parsing should
+	  continue.
+	  
+	  Thanks to Jaidev Bhattacharjee for the bug report
+
+2013-05-13  Ludovic Rousseau
+
+	* [r6627] src/parse.c: parse: make the use of -p argument more
+	  explicit
+	  
+	  The error message now displays: "use ./parse -p" (or whatever the
+	  program name is)
+
+2013-05-11  Ludovic Rousseau
+
+	* [r6626] readers/SCM_SCL010.txt, readers/supported_readers.txt,
+	  src/ccid_usb.c: Add SCM Microsystems Inc. SCL010 Contactless
+	  Reader
+	  
+	  A new firmware version 1.12 seems to make the reader usable as a
+	  CCID readers in contacless mode.
+
 2013-05-08  Ludovic Rousseau
 
 	* [r6624] src/ifdhandler.c: CreateChannelByNameOrChannel(): fix

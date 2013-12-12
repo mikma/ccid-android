@@ -491,7 +491,7 @@ char *yytext;
  * Copyright (C) 2003-2010
  *  Ludovic Rousseau <ludovic.rousseau@free.fr>
  *
- * $Id: tokenparser.l 6504 2013-01-16 14:22:26Z rousseau $
+ * $Id: tokenparser.l 6712 2013-08-05 19:11:47Z rousseau $
  */
 /**
  * @file
@@ -1941,6 +1941,7 @@ int bundleParse(const char *fileName, list_t *l)
 	{
 		(void)yylex();
 	} while (!feof(file));
+	yylex_destroy();
 
 	(void)fclose(file);
 

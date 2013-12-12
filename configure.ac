@@ -1,12 +1,12 @@
 # Process this file with autoconf to produce a configure script.
 # You may need to use autoconf 2.56 or newer
 
-# $Id: configure.ac 6659 2013-06-12 11:55:52Z rousseau $
+# $Id: configure.ac 6729 2013-08-12 21:43:09Z rousseau $
 
 # Require autoconf 2.61
 AC_PREREQ([2.69])
 
-AC_INIT([ccid],[1.4.11])
+AC_INIT([ccid],[1.4.12])
 AC_CONFIG_SRCDIR(src/ifdhandler.c)
 AC_CONFIG_AUX_DIR([.])
 AM_INIT_AUTOMAKE(1.8 dist-bzip2 no-dist-gzip)
@@ -101,18 +101,12 @@ AC_ARG_ENABLE(libusb,
 	[ use_libusb="${enableval}" ], [ use_libusb=yes ] )
 
 # check if libusb is used
+LIBUSB_NEEDED_VERSION="1.0.8"
 if test "x$use_libusb" != xno ; then
 	PKG_CHECK_EXISTS([libusb-1.0], [
-	PKG_CHECK_MODULES(LIBUSB, libusb-1.0, [],
+	PKG_CHECK_MODULES(LIBUSB, libusb-1.0 >= $LIBUSB_NEEDED_VERSION, [],
 		[
-			AC_CHECK_PROG([LIBUSBCONFIG], [libusb-config], [yes])
-
-			if test "$LIBUSBCONFIG" = "yes" ; then
-				LIBUSB_CFLAGS="$LIBUSB_CFLAGS `libusb-config --cflags`"
-				LIBUSB_LIBS="$LIBUSB_LIBS `libusb-config --libs`"
-			else
-				AC_MSG_WARN([libusb-config not found.])
-			fi
+		AC_MSG_WARN([install libusb $LIBUSB_NEEDED_VERSION or later])
 		])
 	])
 
@@ -211,6 +205,15 @@ if test "${ccidtwindir}" = false ; then
 	ccidtwindir=$usbdropdir/serial
 fi
 
+# --enable-serialconfdir=DIR
+AC_ARG_ENABLE(serialconfdir,
+	AS_HELP_STRING([--enable-serialconfdir=dir],[directory containing
+		serial drivers (default to pcscd config)]),
+	[serialconfdir="${enableval}"], [serialconfdir=false])
+if test "${serialconfdir}" = false ; then
+	serialconfdir=`$PKG_CONFIG libpcsclite --variable=serialconfdir`
+fi
+
 # --disable-pcsclite
 AC_ARG_ENABLE(pcsclite,
 	AS_HELP_STRING([--disable-pcsclite],[do not use pcsc-lite debug support]),
@@ -256,6 +259,7 @@ AC_SUBST(ac_aux_dir)
 AC_SUBST(bundle)
 AC_SUBST(usbdropdir)
 AC_SUBST(ccidtwindir)
+AC_SUBST(serialconfdir)
 AS_AC_EXPAND(bindir_exp,$bindir)
 AS_AC_EXPAND(sysconfdir_exp,$sysconfdir)
 
@@ -294,6 +298,7 @@ bundle directory name:   ${bundle}
 USB drop directory:      ${usbdropdir}
 serial Twin support:     ${twinserial}
 serial twin install dir: ${ccidtwindir}
+serial config directory: ${serialconfdir}
 compiled for pcsc-lite:  ${pcsclite}
 class driver:            ${class}
 

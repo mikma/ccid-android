@@ -17,7 +17,7 @@
 	Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-/* $Id: ifdhandler.c 6624 2013-05-08 11:45:06Z rousseau $ */
+/* $Id: ifdhandler.c 6685 2013-07-05 07:17:05Z rousseau $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -141,7 +141,10 @@ static RESPONSECODE CreateChannelByNameOrChannel(DWORD Lun,
 		/* The reader may have to start here so give it some time */
 		cmd_ret = CmdGetSlotStatus(reader_index, pcbuffer);
 		if (IFD_NO_SUCH_DEVICE == cmd_ret)
-			return cmd_ret;
+		{
+			return_value = cmd_ret;
+			goto error;
+		}
 
 		/* save the current read timeout computed from card capabilities */
 		oldReadTimeout = ccid_descriptor->readTimeout;
@@ -505,10 +508,6 @@ EXTERNAL RESPONSECODE IFDHGetCapabilities(DWORD Lun, DWORD Tag,
 				*Length = 0;
 
 				ccid_desc = get_ccid_descriptor(reader_index);
-
-				/* more than one slot is not supported */
-				if (ccid_desc -> bMaxSlotIndex > 0)
-					break;
 
 				/* CCID and not ICCD */
 				if ((PROTOCOL_CCID == ccid_desc -> bInterfaceProtocol)
