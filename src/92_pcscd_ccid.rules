@@ -1,7 +1,7 @@
 # udev rules to set the access rights of CCID smart card readers
 # so they can be used by pcscd
 
-# $Id: 92_pcscd_ccid.rules 6275 2012-04-17 13:42:42Z rousseau $
+# $Id: 92_pcscd_ccid.rules 6587 2013-04-05 16:31:55Z rousseau $
 
 # Gemplus PCMCIA Card
 #SUBSYSTEMS=="pcmcia", DRIVERS=="serial_cs", ACTION=="add", ATTRS{prod_id1}=="Gemplus", ATTRS{prod_id2}=="SerialPort", ATTRS{prod_id3}=="GemPC Card", RUN+="/usr/sbin/pcscd --hotplug" 
@@ -29,7 +29,9 @@ ATTRS{idVendor}=="046a", ATTRS{idProduct}=="003e", GROUP="pcscd"
 ATTRS{idVendor}=="413c", ATTRS{idProduct}=="2100", GROUP="pcscd"
 # MySmartPad.txt
 ATTRS{idVendor}=="09be", ATTRS{idProduct}=="0002", GROUP="pcscd"
-# SCR331-DI-NTTCom.txt
+# SCR3310-NTTCom USB SmartCard Reader
+ATTRS{idVendor}=="04e6", ATTRS{idProduct}=="511a", GROUP="pcscd"
+# SCR331-DI USB Smart Card Reader
 ATTRS{idVendor}=="04e6", ATTRS{idProduct}=="5120", GROUP="pcscd"
 # SCR331-DI.txt
 ATTRS{idVendor}=="04e6", ATTRS{idProduct}=="5111", GROUP="pcscd"

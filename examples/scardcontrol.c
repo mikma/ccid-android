@@ -18,7 +18,7 @@
 */
 
 /*
- * $Id: scardcontrol.c 6406 2012-08-07 14:56:20Z rousseau $
+ * $Id: scardcontrol.c 6566 2013-03-12 14:00:37Z rousseau $
  */
 
 #include <stdio.h>
@@ -750,9 +750,11 @@ int main(int argc, char *argv[])
 			{
 				/* read the fake digits */
 				char in[40];	/* 4 digits + \n + \0 */
+				char *ret;
 
-				(void)fgets(in, sizeof(in), stdin);
-				printf("keyboard sent: %s", in);
+				ret = fgets(in, sizeof(in), stdin);
+				if (ret)
+					printf("keyboard sent: %s", in);
 			}
 		}
 	}

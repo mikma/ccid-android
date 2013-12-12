@@ -1,6 +1,6 @@
 #
 # List of readers supported by the CCID driver
-# Generated: 2012-11-13
+# Generated: 2013-04-16
 #
 # DO NOT EDIT BY HAND
 
@@ -62,6 +62,8 @@
 0x08E6:0x34C3:Gemalto EZIO CB+
 0x08E6:0x4433:Gemalto Gemplus USB SmartCard Reader 433-Swap
 0x08E6:0x5503:Gemalto Prox Dual USB PC LinkReader
+0x08E6:0x5503:Gemalto Prox Dual USB PC LinkReader
+0x08E6:0x5504:Gemalto Prox SU USB PC LinkReader
 0x08E6:0x5504:Gemalto Prox SU USB PC LinkReader
 0x08E6:0x8000:Gemalto Smart Enterprise Guardian Secure USB Device
 
@@ -118,6 +120,7 @@
 # ACS
 0x072F:0x1204:ACS ACR101 ICC Reader
 0x072F:0x8201:ACS APG8201 PINhandy 1
+0x072F:0x8202:ACS APG8201 USB Reader
 0x072F:0x90CC:ACS ACR122U
 0x072F:0x90CC:ACS ACR100
 0x072F:0x90CC:ACS ACR38 plugin
@@ -180,6 +183,7 @@
 0x0A5C:0x5800:Broadcom Corp 5880
 0x0A5C:0x5802:Broadcom Corp 5880
 0x0A5C:0x5802:Broadcom Corp 5880
+0x0A5C:0x5802:Broadcom Corp 5880
 
 # C3PO
 0x0783:0x0007:C3PO TLTC2USB
@@ -227,6 +231,7 @@
 0x08E6:0x4042:Gemalto SA .NET Dual
 0x08E6:0x5743:Gemalto Hybrid Smartcard Reader
 0x08E6:0x8108:Gemalto Smart Enterprise Guardian Secure USB Device
+0x08E6:0x8141:Gemalto IDBridge K3000
 
 # Gemplus
 0x08E6:0x3479:Gemplus GemCore POS Pro Smart Card Reader
@@ -241,6 +246,9 @@
 0x1059:0x000C:Giesecke & Devrient GmbH Star Sign Card Token 350 (ICCD)
 0x1059:0x000D:Giesecke & Devrient GmbH Star Sign Card Token 550 (ICCD)
 
+# GIS Ltd
+0x0F1A:0x0002:GIS Ltd SmartMouse USB
+
 # GoldKey Security
 0x19C8:0x0012:GoldKey Security PIV Token
 
@@ -254,10 +262,25 @@
 0x0B81:0x0200:id3 Semiconductors CL1356T5
 0x0B81:0x0220:id3 Semiconductors CL1356A_HID
 
+# Identive
+0x04E6:0x5710:Identive CLOUD 2700 F Smart Card Reader
+0x04E6:0x5720:Identive Identive CLOUD 4500 F Dual Interface Reader
+0x04E6:0x5720:Identive Identive CLOUD 4500 F Dual Interface Reader
+0x04E6:0x5720:Identive Identive CLOUD 4700 F Dual Interface Reader
+0x04E6:0x5720:Identive Identive CLOUD 4700 F Dual Interface Reader
+0x04E6:0x5721:Identive Identive CLOUD 4510 F Contactless + SAM Reader
+0x04E6:0x5721:Identive Identive CLOUD 4510 F Contactless + SAM Reader
+0x04E6:0x5721:Identive Identive CLOUD 4710 F Contactless + SAM Reader
+0x04E6:0x5721:Identive Identive CLOUD 4710 F Contactless + SAM Reader
+0x04E6:0x5810:Identive CLOUD 2700 R Smart Card Reader
+
 # Inside Secure
 0x2406:0x6300:Inside Secure VaultIC 420 Smart Object
 0x2406:0x6301:Inside Secure VaultIC 440 Smart Object
 0x2406:0x6302:Inside Secure VaultIC 460 Smart Object
+0x2406:0x6403:Inside Secure AT90SCR100
+0x2406:0x6404:Inside Secure AT90SCR050
+0x2406:0x6407:Inside Secure AT90SCR200
 
 # KEBTechnology
 0x04CC:0x5072:KEBTechnology KONA USB SmartCard
@@ -276,6 +299,10 @@
 
 # Macally
 0x08AE:0x0BDF:Macally NFC CCID eNetPad
+
+# Morpho
+0x079B:0x0026:Morpho MSO350/MSO351 Fingerprint Sensor & SmartCard Reader
+0x079B:0x0052:Morpho MSO1350 Fingerprint Sensor & SmartCard Reader
 
 # MSI
 0x0BDA:0x0161:MSI StarReader SMART
@@ -327,6 +354,9 @@
 0x0C4B:0x0504:REINER SCT cyberJack go
 0x0C4B:0x9102:REINER SCT cyberJack RFID basis
 
+# SafeTech
+0x24A2:0x0102:SafeTech SafeTouch
+
 # SchlumbergerSema
 0x0973:0x0003:SchlumbergerSema SchlumbergerSema Cyberflex Access
 
@@ -359,6 +389,9 @@
 0x1C34:0x7136:SpringCard EasyFinger Standard
 0x1C34:0x7138:SpringCard EasyFinger Ultimate
 0x1C34:0x7141:SpringCard Prox'N'Roll
+0x1C34:0x8141:SpringCard NFC'Roll
+0x1C34:0x91B1:SpringCard H663 Series
+0x1C34:0xA1A1:SpringCard H512 Series
 
 # SYNNIX
 0x1206:0x2105:SYNNIX STD200
@@ -400,6 +433,10 @@
 
 # XIRING
 0x0F14:0x0011:XIRING XI-SIGN USB V2
+
+# Yubico
+0x1050:0x0111:Yubico Yubikey NEO OTP+CCID
+0x1050:0x0112:Yubico Yubikey NEO CCID
 
 ##########################
 # section: unsupported
@@ -477,6 +514,16 @@
 #0x04E6:0x5410:SCM Microsystems Inc. SCR35xx v2.0 USB SC Reader (SCR3500.txt)
 #0x04E6:0x5410:SCM Microsystems Inc. SCR 355 (SCR355.txt)
 
+#0x04E6:0x5720:Identive Identive CLOUD 4500 F Dual Interface Reader (Identive_CLOUD_4500_F.txt)
+#0x04E6:0x5720:Identive Identive CLOUD 4500 F Dual Interface Reader (Identive_CLOUD_4500_F.txt_i1)
+#0x04E6:0x5720:Identive Identive CLOUD 4700 F Dual Interface Reader (Identive_CLOUD_4700_F.txt)
+#0x04E6:0x5720:Identive Identive CLOUD 4700 F Dual Interface Reader (Identive_CLOUD_4700_F.txt_i1)
+
+#0x04E6:0x5721:Identive Identive CLOUD 4510 F Contactless + SAM Reader (Identive_CLOUD_4510_F.txt)
+#0x04E6:0x5721:Identive Identive CLOUD 4510 F Contactless + SAM Reader (Identive_CLOUD_4510_F.txt_i1)
+#0x04E6:0x5721:Identive Identive CLOUD 4710 F Contactless + SAM Reader (Identive_CLOUD_4710_F.txt)
+#0x04E6:0x5721:Identive Identive CLOUD 4710 F Contactless + SAM Reader (Identive_CLOUD_4710_F.txt_i1)
+
 #0x058F:0x9520:Alcor Micro AU9520 (AU9520.txt)
 #0x058F:0x9520:Akasa AK-CR-03 (Akasa_AK-CR-03.txt)
 #0x058F:0x9520:Alcor Micro SCR001 (Alcor_SCR001.txt)
@@ -499,8 +546,15 @@
 #0x08E6:0x3478:Gemalto USB GemPCPinpad SmartCard Reader (GemPCPinpad.txt)
 #0x08E6:0x3478:Gemalto USB GemPCPinpad SmartCard Reader (GemPCPinpadv2.txt)
 
+#0x08E6:0x5503:Gemalto Prox Dual USB PC LinkReader (GemProxDU.txt)
+#0x08E6:0x5503:Gemalto Prox Dual USB PC LinkReader (GemProxDU.txt_i1)
+
+#0x08E6:0x5504:Gemalto Prox SU USB PC LinkReader (GemProxSU.txt)
+#0x08E6:0x5504:Gemalto Prox SU USB PC LinkReader (GemProxSU.txt_i1)
+
 #0x0A5C:0x5802:Broadcom Corp 5880 (Broadcom_5880v3.txt)
 #0x0A5C:0x5802:Broadcom Corp 5880 (Broadcom_5880v4.txt)
+#0x0A5C:0x5802:Broadcom Corp 5880 (Broadcom_5880v4.txt_i1)
 
 #0x0B81:0x0200:id3 Semiconductors CL1356T (id3_CL1356T.txt)
 #0x0B81:0x0200:id3 Semiconductors CL1356T5 (id3_CL1356T5.txt)

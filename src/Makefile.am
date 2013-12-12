@@ -1,4 +1,4 @@
-# $Id: Makefile.am 5909 2011-08-24 09:30:55Z rousseau $
+# $Id: Makefile.am 6518 2013-01-27 11:21:23Z rousseau $
 
 CCID_BUNDLE = $(bundle)
 CCID_LIB = libccid.$(DYN_LIB_EXT)
@@ -78,7 +78,7 @@ install: $(LIBS_TO_INSTALL)
 INSTALL_UDEV_RULE_FILE=@/bin/echo -e "\n\33[01;31m***************\n" ; echo "copy the src/92_pcscd_ccid.rules file in udev directory (/etc/udev/rules.d/)" ; /bin/echo -e "\n***************\n\33[0m"
 
 Info.plist: Info.plist.src $(srcdir)/../readers/supported_readers.txt
-	$(srcdir)/create_Info_plist.pl $(srcdir)/../readers/supported_readers.txt $(srcdir)/Info.plist.src --target=$(CCID_LIB) --version=$(VERSION) --bundle=$(CCID_BUNDLE) $(NOCLASS) > Info.plist
+	$(srcdir)/create_Info_plist.pl $(srcdir)/../readers/supported_readers.txt $(srcdir)/Info.plist.src --target=$(CCID_LIB) --version=$(VERSION) $(NOCLASS) > Info.plist
 
 DISTCLEANFILES = tokenparser.c Info.plist
 

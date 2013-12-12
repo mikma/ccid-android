@@ -17,7 +17,7 @@
 	Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-/* $Id: ifdhandler.c 6478 2012-10-31 15:20:20Z rousseau $ */
+/* $Id: ifdhandler.c 6563 2013-03-06 14:27:02Z rousseau $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -1925,7 +1925,6 @@ void extra_egt(ATR_t *atr, _ccid_descriptor *ccid_desc, DWORD Protocol)
 	unsigned int card_baudrate;
 	unsigned int default_baudrate;
 	double f, d;
-	int i;
 
 	/* if TA1 not present */
 	if (! atr->ib[0][ATR_INTERFACE_BYTE_TA].present)
@@ -1963,6 +1962,8 @@ void extra_egt(ATR_t *atr, _ccid_descriptor *ccid_desc, DWORD Protocol)
 
 		if (SCARD_PROTOCOL_T1 == Protocol)
 		{
+			int i;
+
 			/* TBi (i>2) present? BWI/CWI */
 			for (i=2; i<ATR_MAX_PROTOCOLS; i++)
 			{
