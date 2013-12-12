@@ -17,7 +17,7 @@
 	Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-/* $Id: ifdhandler.c 6308 2012-05-19 08:20:04Z rousseau $ */
+/* $Id: ifdhandler.c 6399 2012-08-02 18:06:38Z rousseau $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -131,19 +131,24 @@ static RESPONSECODE CreateChannelByNameOrChannel(DWORD Lun,
 		/* Maybe we have a special treatment for this reader */
 		(void)ccid_open_hack_pre(reader_index);
 
-		/* save the current read timeout computed from card capabilities */
-		oldReadTimeout = ccid_descriptor->readTimeout;
-
-		/* 1000ms just to resync the USB toggle bits */
-		ccid_descriptor->readTimeout = 1000;
-
 		/* Try to access the reader */
 		/* This "warm up" sequence is sometimes needed when pcscd is
 		 * restarted with the reader already connected. We get some
 		 * "usb_bulk_read: Resource temporarily unavailable" on the first
 		 * few tries. It is an empirical hack */
+
+		/* The reader may have to start here so give it some time */
+		ret = CmdGetSlotStatus(reader_index, pcbuffer);
+		if (IFD_NO_SUCH_DEVICE == ret)
+			return ret;
+
+		/* save the current read timeout computed from card capabilities */
+		oldReadTimeout = ccid_descriptor->readTimeout;
+
+		/* 100 ms just to resync the USB toggle bits */
+		ccid_descriptor->readTimeout = 100;
+
 		if ((IFD_COMMUNICATION_ERROR == CmdGetSlotStatus(reader_index, pcbuffer))
-			&& (IFD_COMMUNICATION_ERROR == CmdGetSlotStatus(reader_index, pcbuffer))
 			&& (IFD_COMMUNICATION_ERROR == CmdGetSlotStatus(reader_index, pcbuffer)))
 		{
 			DEBUG_CRITICAL("failed");

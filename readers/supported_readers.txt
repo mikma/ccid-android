@@ -1,6 +1,6 @@
 #
 # List of readers supported by the CCID driver
-# Generated: 2012-06-13
+# Generated: 2012-09-13
 #
 # DO NOT EDIT BY HAND
 
@@ -15,7 +15,7 @@
 
 # ActivIdentity
 0x09C3:0x0013:ActivIdentity USB Reader V3
-0x09C3:0x0014:ActivIdentity Activkey Sim
+0x09C3:0x0014:ActivIdentity Activkey_Sim
 
 # Alcor Micro
 0x058F:0x9520:Alcor Micro AU9520
@@ -254,6 +254,8 @@
 0x0B81:0x0220:id3 Semiconductors CL1356A_HID
 
 # Inside Secure
+0x2406:0x6300:Inside Secure VaultIC 420 Smart Object
+0x2406:0x6301:Inside Secure VaultIC 440 Smart Object
 0x2406:0x6302:Inside Secure VaultIC 460 Smart Object
 
 # KEBTechnology
@@ -282,6 +284,9 @@
 0x1E0D:0x0033:Neowave Weneo
 0x1E0D:0x1023:Neowave Weneo
 0x1E0D:0x8033:Neowave Weneo
+
+# NTT Communications Corp.
+0x04E6:0x511A:NTT Communications Corp. SCR3310-NTTCom USB SmartCard Reader
 
 # NXP
 0x1FC9:0x010B:NXP PR533
@@ -441,6 +446,9 @@
 
 # jNet Technology inc.
 #0x0483:0x2010:jNet Technology inc. jToken s1
+
+# MX5
+#0x0980:0x902F:MX5 MX5  SMART CCID DRIVER
 
 # OCS ID-One Cosmo Card
 #0x1A74:0x6356:OCS ID-One Cosmo Card USB Smart Chip Device

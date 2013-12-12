@@ -1,3 +1,109 @@
+2012-10-07  Ludovic Rousseau
+
+	* [r6471] README: Fix typo
+	* [r6470] README, configure.ac: Release 1.4.8
+
+2012-10-04  Ludovic Rousseau
+
+	* [r6469] configure.ac, configure.in: Rename configure.in in
+	  configure.ac
+	  
+	  aclocal: warning: autoconf input should be named 'configure.ac',
+	  not 'configure.in'
+
+2012-09-14  Ludovic Rousseau
+
+	* [r6465] ylwrap: Updated version from autoamake-1.12
+	* [r6464] MacOSX/configure: Use pkg-config to find the libusb-1.0
+	  arguments
+	  
+	  The libusb-1.0 path and link arguments are no more hard coded.
+
+2012-09-13  Ludovic Rousseau
+
+	* [r6457] readers/MX5_SMART_CCID_DRIVER.txt,
+	  readers/supported_readers.txt: Add MX5 SMART CCID DRIVER in the
+	  "disabled" list
+
+2012-09-03  Ludovic Rousseau
+
+	* [r6455] readers/Inside_Secure_VaultIC_440.txt,
+	  readers/supported_readers.txt: Add Inside Secure VaultIC 440
+	  Smart Object
+	* [r6454] readers/Inside_Secure_VaultIC_420.txt,
+	  readers/supported_readers.txt: Add Inside Secure VaultIC 420
+	  Smart Object
+
+2012-08-30  Ludovic Rousseau
+
+	* [r6452] Makefile.am, configure.in, m4/acx_pthread.m4,
+	  m4/ax_pthread.m4: Use AX_PTHREAD macro instead of ACX_PTHREAD
+	  
+	  Fix some "autoreconf -vis -Wall" warnings
+
+2012-08-23  Ludovic Rousseau
+
+	* [r6438] Makefile.am, configure.in, m4/Makefile.am: Integrate
+	  m4/Makefile.am into Makefile.am
+	  
+	  The idea is to remove a Makefile files to speed up compilation.
+	  
+	  Thanks to Diego Elio Pettenò for the idea.
+	* [r6437] examples/Makefile.am: Add missing PCSCv2part10.h
+	* [r6436] configure.in: Add AC_CONFIG_MACRO_DIR([m4]) as suggested
+	  by autoreconf
+	  
+	  libtoolize: Consider adding `AC_CONFIG_MACRO_DIR([m4])' to
+	  configure.in and libtoolize: rerunning libtoolize, to keep the
+	  correct libtool macros in-tree.
+
+2012-08-07  Ludovic Rousseau
+
+	* [r6406] examples/Makefile.am, examples/PCSCv2part10.c,
+	  examples/PCSCv2part10.h, examples/scardcontrol.c: Use helper
+	  functions from libPCSCv2part10 project
+	* [r6403] examples/scardcontrol.c: Add support of new PC/SC V2 part
+	  10 properties: - dwMaxAPDUDataSize - wIdVendor - wIdProduct
+
+2012-08-02  Ludovic Rousseau
+
+	* [r6399] src/ifdhandler.c: CreateChannelByNameOrChannel(): check
+	  device exists for the first CmdGetSlotStatus()
+	* [r6396] src/ifdhandler.c: CreateChannelByNameOrChannel(): Do not
+	  change the default timeout for the first call to
+	  CmdGetSlotStatus().
+	  
+	  In revision 4938 the timeout is changed from default to 100 ms to
+	  avoid a 2 seconds delay if the reader needs to resynchronize.
+	  
+	  In revision 5389 the timeout was changed from 100 ms to 1000 ms
+	  because it was too sort for the Kobil KAAN Base reader.
+	  
+	  The idea now is to use the default value
+	  (DEFAULT_COM_READ_TIMEOUT (3*1000)) for the first
+	  CmdGetSlotStatus() call. And then use a short value (100 ms) for
+	  the 2 next calls.
+	  
+	  The reader should have enough time to start during the 3 first
+	  seconds.
+
+2012-07-26  Ludovic Rousseau
+
+	* [r6394] readers/ActivkeySim.txt: New firmware
+	* [r6393] readers/SCR3310-NTTCom.txt,
+	  readers/supported_readers.txt: Add (again) SCR3310-NTTCom USB
+	  SmartCard Reader
+	* [r6390] readers/GemPCTwin.txt: New firmware (version E)
+
+2012-07-05  Ludovic Rousseau
+
+	* [r6387] readers/GemPCTwin.txt: New firmware
+
+2012-06-23  Ludovic Rousseau
+
+	* [r6352] readers/CherryST1044U.txt: New firmware. No other
+	  changes.
+
 2012-06-22  Ludovic Rousseau
 
 	* [r6350] configure.in: Release 1.4.7

@@ -1,15 +1,16 @@
 # Process this file with autoconf to produce a configure script.
 # You may need to use autoconf 2.56 or newer
 
-# $Id: configure.in 6350 2012-06-22 08:53:40Z rousseau $
+# $Id: configure.ac 6470 2012-10-07 11:36:44Z rousseau $
 
 # Require autoconf 2.61
 AC_PREREQ([2.69])
 
-AC_INIT([ccid],[1.4.7])
+AC_INIT([ccid],[1.4.8])
 AC_CONFIG_SRCDIR(src/ifdhandler.c)
 AC_CONFIG_AUX_DIR([.])
 AM_INIT_AUTOMAKE(1.8 dist-bzip2 no-dist-gzip)
+AC_CONFIG_MACRO_DIR([m4])
 
 # silent build by default
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
@@ -164,7 +165,7 @@ AC_ARG_ENABLE(multi-thread,
 	[ multithread="${enableval}" ], [ multithread=yes ] )
 
 if test "${multithread}" != no ; then
-	ACX_PTHREAD(
+	AX_PTHREAD(
 		[ AC_DEFINE(HAVE_PTHREAD, 1,
 			[Define if you have POSIX threads libraries and header files.])
 	   	], [ AC_MSG_ERROR([POSIX thread support required]) ])
@@ -300,7 +301,6 @@ EOF
 
 # Write Makefiles.
 AC_CONFIG_FILES(Makefile
-	m4/Makefile
 	src/Makefile
 	readers/Makefile
 	contrib/Makefile
