@@ -1,6 +1,6 @@
 #
 # List of readers supported by the CCID driver
-# Generated: 2012-09-13
+# Generated: 2012-11-13
 #
 # DO NOT EDIT BY HAND
 
@@ -130,6 +130,8 @@
 # Aktiv
 0x0A89:0x0025:Aktiv Rutoken lite
 0x0A89:0x0030:Aktiv Rutoken ECP
+0x0A89:0x0080:Aktiv PINPad Ex
+0x0A89:0x0081:Aktiv PINPad In
 
 # Aktiv Co., ProgramPark
 0x0A89:0x0060:Aktiv Co., ProgramPark Rutoken Magistra
@@ -152,7 +154,6 @@
 0x03EB:0x6011:ATMEL AT90SCR050
 0x03EB:0x6012:ATMEL VaultIC420 Smart Object
 0x03EB:0x6014:ATMEL VaultIC440
-0x03EB:0x6016:ATMEL VaultIC460
 
 # Avtor
 0x15CF:0x0019:Avtor SecureToken
@@ -323,6 +324,7 @@
 0x14DD:0x1006:Raritan D2CIM-DVUSB VM/CCID
 
 # REINER SCT
+0x0C4B:0x0504:REINER SCT cyberJack go
 0x0C4B:0x9102:REINER SCT cyberJack RFID basis
 
 # SchlumbergerSema
@@ -411,6 +413,9 @@
 
 # Aladdin
 0x0529:0x0620:Aladdin eToken PRO USB 72K Java
+
+# ATMEL
+0x03EB:0x6016:ATMEL VaultIC460
 
 # Broadcom Corp
 0x0A5C:0x5801:Broadcom Corp 5880

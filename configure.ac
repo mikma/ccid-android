@@ -1,12 +1,12 @@
 # Process this file with autoconf to produce a configure script.
 # You may need to use autoconf 2.56 or newer
 
-# $Id: configure.ac 6470 2012-10-07 11:36:44Z rousseau $
+# $Id: configure.ac 6507 2013-01-16 15:11:53Z rousseau $
 
 # Require autoconf 2.61
 AC_PREREQ([2.69])
 
-AC_INIT([ccid],[1.4.8])
+AC_INIT([ccid],[1.4.9])
 AC_CONFIG_SRCDIR(src/ifdhandler.c)
 AC_CONFIG_AUX_DIR([.])
 AM_INIT_AUTOMAKE(1.8 dist-bzip2 no-dist-gzip)

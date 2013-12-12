@@ -17,7 +17,7 @@
 	Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-/* $Id: ifdhandler.c 6399 2012-08-02 18:06:38Z rousseau $ */
+/* $Id: ifdhandler.c 6478 2012-10-31 15:20:20Z rousseau $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -678,7 +678,10 @@ EXTERNAL RESPONSECODE IFDHSetProtocolParameters(DWORD Lun, DWORD Protocol,
 	/* Do not send CCID command SetParameters or PPS to the CCID
 	 * The CCID will do this himself */
 	if (ccid_desc->dwFeatures & CCID_CLASS_AUTO_PPS_PROP)
+	{
+		DEBUG_COMM2("Timeout: %d ms", ccid_desc->readTimeout);
 		goto end;
+	}
 
 	/* Get ATR of the card */
 	(void)ATR_InitFromArray(&atr, ccid_slot->pcATRBuffer,

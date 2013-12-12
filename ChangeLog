@@ -1,3 +1,30 @@
+2013-01-16  Ludovic Rousseau
+
+	* [r6507] README, configure.ac: Release 1.4.9
+
+2012-11-13  Ludovic Rousseau
+
+	* [r6482] readers/ReinerSCT_cyberJack_go.txt,
+	  readers/supported_readers.txt: Add REINER SCT cyberJack go
+	* [r6481] readers/supported_readers.txt: Move ATMEL VaultIC460 in
+	  unsupported list See revision 6479
+
+2012-10-31  Ludovic Rousseau
+
+	* [r6478] src/ifdhandler.c: IFDHSetProtocolParameters(): display
+	  the timeout
+	  
+	  If the reader has CCID_CLASS_AUTO_PPS_PROP then the negociations
+	  are done by the reader itself and the default timeout
+	  DEFAULT_COM_READ_TIMEOUT is used.
+
+2012-10-12  Ludovic Rousseau
+
+	* [r6475] readers/Rutoken_PINPad_in.txt,
+	  readers/supported_readers.txt: Add Aktiv Rutoken PINPad In
+	* [r6474] readers/Rutoken_PINPad_ex.txt,
+	  readers/supported_readers.txt: Add Aktiv Rutoken PINPad Ex
+
 2012-10-07  Ludovic Rousseau
 
 	* [r6471] README: Fix typo
