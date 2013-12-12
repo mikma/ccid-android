@@ -1,15 +1,15 @@
 # Process this file with autoconf to produce a configure script.
 # You may need to use autoconf 2.56 or newer
 
-# $Id: configure.ac 6729 2013-08-12 21:43:09Z rousseau $
+# $Id: configure.ac 6766 2013-10-09 10:00:52Z rousseau $
 
 # Require autoconf 2.61
 AC_PREREQ([2.69])
 
-AC_INIT([ccid],[1.4.12])
+AC_INIT([ccid],[1.4.13])
 AC_CONFIG_SRCDIR(src/ifdhandler.c)
 AC_CONFIG_AUX_DIR([.])
-AM_INIT_AUTOMAKE(1.8 dist-bzip2 no-dist-gzip)
+AM_INIT_AUTOMAKE(1.8 dist-bzip2 no-dist-gzip subdir-objects)
 AC_CONFIG_MACRO_DIR([m4])
 
 # silent build by default
@@ -107,6 +107,7 @@ if test "x$use_libusb" != xno ; then
 	PKG_CHECK_MODULES(LIBUSB, libusb-1.0 >= $LIBUSB_NEEDED_VERSION, [],
 		[
 		AC_MSG_WARN([install libusb $LIBUSB_NEEDED_VERSION or later])
+		PKG_CHECK_MODULES(LIBUSB, libusb-1.0)
 		])
 	])
 

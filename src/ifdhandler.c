@@ -17,7 +17,7 @@
 	Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-/* $Id: ifdhandler.c 6685 2013-07-05 07:17:05Z rousseau $ */
+/* $Id: ifdhandler.c 6753 2013-09-21 14:16:17Z rousseau $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -160,9 +160,6 @@ static RESPONSECODE CreateChannelByNameOrChannel(DWORD Lun,
 		}
 		else
 		{
-			/* set back the old timeout */
-			ccid_descriptor->readTimeout = oldReadTimeout;
-
 			/* Maybe we have a special treatment for this reader */
 			return_value = ccid_open_hack_post(reader_index);
 			if (return_value != IFD_SUCCESS)
@@ -170,6 +167,9 @@ static RESPONSECODE CreateChannelByNameOrChannel(DWORD Lun,
 				DEBUG_CRITICAL("failed");
 			}
 		}
+
+		/* set back the old timeout */
+		ccid_descriptor->readTimeout = oldReadTimeout;
 	}
 
 error:
@@ -1405,7 +1405,10 @@ EXTERNAL RESPONSECODE IFDHControl(DWORD Lun, DWORD dwControlCode,
 	/* Implement the PC/SC v2.02.07 Part 10 IOCTL mechanism */
 
 	/* Query for features */
-	if (CM_IOCTL_GET_FEATURE_REQUEST == dwControlCode)
+	/* 0x313520 is the Windows value for SCARD_CTL_CODE(3400)
+	 * This hack is needed for RDP applications */
+	if ((CM_IOCTL_GET_FEATURE_REQUEST == dwControlCode)
+		|| (0x313520 == dwControlCode))
 	{
 		unsigned int iBytesReturned = 0;
 		PCSC_TLV_STRUCTURE *pcsc_tlv = (PCSC_TLV_STRUCTURE *)RxBuffer;

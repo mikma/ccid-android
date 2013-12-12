@@ -19,7 +19,7 @@
 */
 
 /*
- * $Id: commands.c 6617 2013-05-04 15:50:40Z rousseau $
+ * $Id: commands.c 6738 2013-08-23 08:43:37Z rousseau $
  */
 
 #include <string.h>
@@ -1929,6 +1929,7 @@ static RESPONSECODE CmdXfrBlockCHAR_T0(unsigned int reader_index,
 			return return_value;
 
 		/* wait for ready */
+		pcbuffer[0] = 0;
 		return_value = CmdGetSlotStatus(reader_index, pcbuffer);
 		if (return_value != IFD_SUCCESS)
 			return return_value;

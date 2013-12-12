@@ -18,7 +18,7 @@
 */
 
 /*
- * $Id: ccid_usb.c 6682 2013-07-01 08:56:09Z rousseau $
+ * $Id: ccid_usb.c 6760 2013-10-01 12:57:50Z rousseau $
  */
 
 #define __CCID_USB__
@@ -839,6 +839,9 @@ status_t CloseUSB(unsigned int reader_index)
 
 			/* Deallocate the extension itself */
 			free(msExt);
+
+			/* Stop the slot */
+			usbDevice[reader_index].multislot_extension = NULL;
 		}
 
 		if (usbDevice[reader_index].ccid.gemalto_firmware_features)
@@ -1014,7 +1017,7 @@ int ccid_check_firmware(struct libusb_device_descriptor *desc)
 {
 	unsigned int i;
 
-	for (i=0; i<sizeof(Bogus_firmwares)/sizeof(Bogus_firmwares[0]); i++)
+	for (i=0; i<COUNT_OF(Bogus_firmwares); i++)
 	{
 		if (desc->idVendor != Bogus_firmwares[i].vendor)
 			continue;
@@ -1055,7 +1058,7 @@ static unsigned int *get_data_rates(unsigned int reader_index,
 {
 	int n, i, len;
 	unsigned char buffer[256*sizeof(int)];	/* maximum is 256 records */
-	unsigned int *int_array;
+	unsigned int *uint_array;
 
 	/* See CCID 3.7.3 page 25 */
 	n = ControlUSB(reader_index,
@@ -1092,8 +1095,8 @@ static unsigned int *get_data_rates(unsigned int reader_index,
 			n = len;
 	}
 
-	int_array = calloc(n+1, sizeof(int));
-	if (NULL == int_array)
+	uint_array = calloc(n+1, sizeof(uint_array[0]));
+	if (NULL == uint_array)
 	{
 		DEBUG_CRITICAL("Memory allocation failed");
 		return NULL;
@@ -1102,14 +1105,14 @@ static unsigned int *get_data_rates(unsigned int reader_index,
 	/* convert in correct endianess */
 	for (i=0; i<n; i++)
 	{
-		int_array[i] = dw2i(buffer, i*4);
-		DEBUG_INFO2("declared: %d bps", int_array[i]);
+		uint_array[i] = dw2i(buffer, i*4);
+		DEBUG_INFO2("declared: %d bps", uint_array[i]);
 	}
 
 	/* end of array marker */
-	int_array[i] = 0;
+	uint_array[i] = 0;
 
-	return int_array;
+	return uint_array;
 } /* get_data_rates */
 
 
@@ -1577,9 +1580,6 @@ static void Multi_InterruptStop(int reader_index)
 
 	DEBUG_PERIODIC2("Stop (%d)", reader_index);
 
-	/* Stop the slot */
-	usbDevice[reader_index].multislot_extension = NULL;
-
 	interrupt_byte = (usbDevice[reader_index].ccid.bCurrentSlotIndex / 4) + 1;
 	interrupt_mask = 0x02 << (2 * (usbDevice[reader_index].ccid.bCurrentSlotIndex % 4));
 
@@ -1588,6 +1588,7 @@ static void Multi_InterruptStop(int reader_index)
 	/* Broacast an interrupt to wake-up the slot's thread */
 	msExt->buffer[interrupt_byte] |= interrupt_mask;
 	pthread_cond_broadcast(&msExt->condition);
+
 	pthread_mutex_unlock(&msExt->mutex);
 } /* Multi_InterruptStop */
 

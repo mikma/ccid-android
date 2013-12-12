@@ -1,6 +1,6 @@
 #
 # List of readers supported by the CCID driver
-# Generated: 2013-08-12
+# Generated: 2013-09-23
 #
 # DO NOT EDIT BY HAND
 
@@ -116,6 +116,9 @@
 ##########################
 # section: shouldwork
 ##########################
+
+# Access IS
+0x0DB5:0x0138:Access IS ePassport Reader
 
 # ACS
 0x072F:0x1204:ACS ACR101 ICC Reader
@@ -336,6 +339,9 @@
 # Philips Semiconductors
 0x0471:0x040F:Philips Semiconductors JCOP41V221
 0x04B9:0x1400:Philips Semiconductors SmartMX Sample
+
+# Planeta
+0x21AB:0x0010:Planeta RC700-NFC CCID
 
 # Raritan
 0x14DD:0x1006:Raritan D2CIM-DVUSB VM/CCID
