@@ -1,3 +1,238 @@
+2013-11-25  Ludovic Rousseau
+
+	* [r6795] README, configure.ac: Release 1.4.14
+	* [r6794] README: Reformat the list of readers in the "add support
+	  for" section
+	* [r6793] src/ccid_usb.c: Generalize the management of readers with
+	  bDeviceClass = 0xFF
+	  
+	  Some early Gemalto Ezio CB+ readers have bDeviceClass,
+	  bDeviceSubClass and bDeviceProtocol set to 0xFF (proprietary)
+	  instead of 0x00.
+	  
+	  So on Mac OS X the reader configuration is not done by the
+	  OS/kernel and we do it ourself.
+	  
+	  The code is no more limited to the GEMALTO_EZIO_CBP
+	  (0x08E6/0x34C3) but to any reader with the problem, like the
+	  Todos Argos Mini II CCID.
+	* [r6792] MacOSX/configure: Set Xcode SDK to version 10.8
+	  
+	  With Xcode 5.x the minimum SDK version is 10.8 (Mountain Lion)
+	  even on Mountain Lion.
+	* [r6791] readers/Gemalto_Ezio_Shield_Secure_Channel.txt,
+	  readers/supported_readers.txt: Add Gemalto ING Shield Pro SC
+	* [r6790] src/ifdhandler.c: IFDHControl(): report
+	  FEATURE_IFD_PIN_PROPERTIES only for pinpad readers
+	  
+	  Some (bogus) applications use the presence of
+	  FEATURE_IFD_PIN_PROPERTIES to know if the reader is a pinpad
+	  reader or not. The application should use
+	  FEATURE_VERIFY_PIN_DIRECT and FEATURE_MODIFY_PIN_DIRECT instead.
+	  
+	  Reporting FEATURE_IFD_PIN_PROPERTIES for a non-pinpad reader is
+	  useless so it should not harm to remove it from
+	  CM_IOCTL_GET_FEATURE_REQUEST.
+
+2013-10-24  Ludovic Rousseau
+
+	* [r6784] src/ccid_usb.c, src/ifdhandler.c: Add support of Gemalto
+	  GemCore SIM Pro firmware 2.0
+	  
+	  The new firmware of the Gemalto GemCore SIM Pro removes a
+	  limitation of the firmware 1.0. The 2 slots now supports the same
+	  data rates. The second slot is no more limited to some values
+	  only.
+	* [r6783] src/ccid.c, src/ccid_serial.c, src/commands.c,
+	  src/commands.h, src/ifdhandler.c: Add a timeout parameter to
+	  CmdEscape()
+	  
+	  Not all commands need the same timeout. For example the
+	  CmdEscape() used in ccid_serial.c to check if the reader is alive
+	  should have a short timeout. The timeout was forced to 30 seconds
+	  inside CmdEscape() so it was not possible to use a different
+	  value. The patch fixes this.
+	* [r6782] src/ifdhandler.c: Limit GemCore SIM PRO hack to only the
+	  specific reader
+	  
+	  If the ATR fails we should mark the card as absent only for the
+	  GemCore SIM PRO. This reader do not manage slot status for the
+	  second slot and a corresponding hack is present in function
+	  IFDHICCPresence() around line 1713.
+
+2013-10-19  Ludovic Rousseau
+
+	* [r6781]
+	  readers/extra_features/Gemalto_Ezio_Shield_PinPad_Martin_features.txt:
+	  CT710 parse from Martin Paljak
+	  
+	  http://archives.neohapsis.com/archives/dev/muscle/2013-q4/0040.html
+	  https://sourceforge.net/p/opensc/mailman/message/31538801/
+
+2013-10-18  Ludovic Rousseau
+
+	* [r6776] readers/extra_features/GemPCPinpadv2_features.txt,
+	  readers/extra_features/Gemalto_Ezio_Shield_PinPad_features.txt:
+	  Add reader name, Pid and Vid
+	* [r6774] readers/extra_features,
+	  readers/extra_features/GemPCPinpadv2_features.txt,
+	  readers/extra_features/Gemalto_Ezio_Shield_PinPad_features.txt,
+	  readers/extra_features/README.txt: This directory contains extra
+	  information about a reader
+	  
+	  For example the result of the
+	  PCSC/UnitaryTests/FEATURE_CCID_ESC_COMMAND_Gemalto_features.py
+	  command on some Gemalto readers.
+
+2013-10-09  Ludovic Rousseau
+
+	* [r6766] README, configure.ac: release 1.4.13
+
+2013-10-02  Ludovic Rousseau
+
+	* [r6762] MacOSX/configure: Simplify the code for a NON generic
+	  driver
+	  
+	  - do not build a class driver (not yet used by pcsc-lite on Mac
+	  OS X) using --disable-class
+	  
+	  - use a specific bundle name to NOT overwrite the official CCID
+	  driver using --enable-bundle=ifd-ccid-$BUNDLE_ID.bundle
+	  
+	  - differentiate each libccid library by the dynamic linker using
+	  --prefix=/fake/$BUNDLE_ID
+	* [r6761] MacOSX/configure: Document the use of --disable-class
+
+2013-10-01  Ludovic Rousseau
+
+	* [r6760] src/ccid_usb.c, src/debug.c: Use the COUNT_OF macro
+
+2013-09-30  Ludovic Rousseau
+
+	* [r6757] src/ccid_usb.c: Multislot support: do not crash on exit
+	  
+	  The field multislot_extension should be set to NULL only _after_
+	  the multi-slot thread management is stopped. This entry is used
+	  by the Multi_PollingProc thread.
+
+2013-09-23  Ludovic Rousseau
+
+	* [r6755] readers/Access_IS_ePassport_Reader.txt,
+	  readers/supported_readers.txt: Add Access IS ePassport Reader
+	* [r6754] ylwrap: Update from automake 1.14
+
+2013-09-21  Ludovic Rousseau
+
+	* [r6753] src/ifdhandler.c: CreateChannelByNameOrChannel(): reset
+	  ccid_descriptor->readTimeout in all cases
+	  
+	  The value was not restored in the error case. So it was not a
+	  bug. But the Coverity tool complained:
+	  
+	  CID 1090609 (#1 of 1): Failure to restore non-local value
+	  (MISSING_RESTORE)20. end_of_scope: Value of non-local
+	  "ccid_descriptor->readTimeout" that was saved in "oldReadTimeout"
+	  is not restored as it was along other paths.
+
+2013-09-16  Ludovic Rousseau
+
+	* [r6752] src/Makefile.am: Revert change in revision 6735
+	  
+	  We can't use install-exec-local since we want to overwrite the
+	  install rule. We do not want to _add_ files to install
+	* [r6751] MacOSX/configure: Display the warning "No Universal
+	  Binary build" in red
+
+2013-09-05  Ludovic Rousseau
+
+	* [r6746] configure.ac: Set LIBUSB_* even if the libusb-1.0 version
+	  is too old
+	  
+	  If PKG_CHECK_MODULES(LIBUSB, libusb-1.0 >=
+	  $LIBUSB_NEEDED_VERSION,...) fails then LIBUSB_CFLAGS and
+	  LIBUSB_LIBS are not set. This is problematic since it just
+	  displays a warning. So we recall PKG_CHECK_MODULES(LIBUSB,
+	  libusb-1.0) with not version test
+	  
+	  Problem discovered with Debian GNU/kFreeBSD where libusb-1.0 is
+	  at version 1.0.6 (it is not the _real_ libusb).
+	  
+	  ./configure failed with: [...] checking for LIBUSB... no
+	  configure: WARNING: install libusb 1.0.8 or later checking
+	  libusb.h usability... yes checking libusb.h presence... yes
+	  checking for libusb.h... yes configure: error: libusb not found,
+	  use ./configure LIBUSB_LIBS=...
+
+2013-08-24  Ludovic Rousseau
+
+	* [r6740] configure.ac: Use subdir-objects option
+	  
+	  src/Makefile.am:36: warning: source file 'towitoko/atr.c' is in a
+	  subdirectory, src/Makefile.am:36: but option 'subdir-objects' is
+	  disabled
+	  
+	  automake-1.14: warning: possible forward-incompatibility.
+	  automake-1.14: At least a source file is in a subdirectory, but
+	  the 'subdir-objects' automake-1.14: automake option hasn't been
+	  enabled. For now, the corresponding output automake-1.14: object
+	  file(s) will be placed in the top-level directory. However,
+	  automake-1.14: this behaviour will change in future Automake
+	  versions: they will automake-1.14: unconditionally cause object
+	  files to be placed in the same subdirectory automake-1.14: of the
+	  corresponding sources. automake-1.14: You are advised to start
+	  using 'subdir-objects' option throughout your automake-1.14:
+	  project, to avoid future incompatibilities.
+
+2013-08-23  Ludovic Rousseau
+
+	* [r6739] src/ifdhandler.c: IFDHControl(): Add support of Windows
+	  value for CM_IOCTL_GET_FEATURE_REQUEST
+	  
+	  Windows uses 0x313520 for SCARD_CTL_CODE(3400) pcsc-lite uses
+	  0x42000D48 for SCARD_CTL_CODE(3400)
+	  
+	  RDP aplications (like rdesktop) will convert SCardControl()
+	  commands from a Windows application (so using 0x313520) to
+	  pcsc-lite.
+	* [r6738] src/commands.c: Silence a "clang --analyze" warning
+	  
+	  commands.c:1936:12: warning: The right operand of '==' is a
+	  garbage value if (0x10 == pcbuffer[0]) ^ ~~~~~~~~~~~
+	* [r6737] src/ccid_usb.c: Fix "clang --analyze" warning
+	  
+	  ccid_usb.c:1095:14: warning: Result of 'calloc' is converted to a
+	  pointer of type 'unsigned int', which is incompatible with sizeof
+	  operand type 'int' int_array = calloc(n+1, sizeof(int)); ^~~~~~
+	  ~~~~~~~~~~~
+	  
+	  - Change variable name int_array -> uint_array since the type is
+	  "unsigned int" - Use sizeof(uint_array[0]) to always get the
+	  correct type of a uint_array[] element
+	* [r6736] src/Makefile.am: Uninstall libccidtwin in the uninstall
+	  rule
+	  
+	  If libccidtwin is installed in install rule we should also remove
+	  it in the uninstall rule
+	* [r6735] src/Makefile.am: Use the -local versions for install and
+	  uninstall rules
+	  
+	  autoreconf: running: automake --add-missing --no-force
+	  --warnings=all src/Makefile.am:76: warning: user target 'install'
+	  defined here ... /usr/share/automake-1.13/am/install.am: ...
+	  overrides Automake target 'install' defined here
+	  src/Makefile.am:99: warning: user target 'uninstall' defined here
+	  ... /usr/share/automake-1.13/am/install.am: ... overrides
+	  Automake target 'uninstall' defined here src/Makefile.am:99:
+	  consider using uninstall-local instead of uninstall
+	  
+	  See
+	  http://www.gnu.org/software/automake/manual/html_node/Extending.html
+
+2013-08-20  Ludovic Rousseau
+
+	* [r6732] readers/Planeta_RC700-NFC_CCID.txt,
+	  readers/supported_readers.txt: Add Planeta RC700-NFC CCID
+
 2013-08-12  Ludovic Rousseau
 
 	* [r6729] README, configure.ac: Release 1.4.12

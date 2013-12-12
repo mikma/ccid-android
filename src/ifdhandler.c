@@ -17,7 +17,7 @@
 	Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-/* $Id: ifdhandler.c 6753 2013-09-21 14:16:17Z rousseau $ */
+/* $Id: ifdhandler.c 6790 2013-11-25 10:02:35Z rousseau $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -1182,8 +1182,9 @@ EXTERNAL RESPONSECODE IFDHPowerICC(DWORD Lun, DWORD Action,
 			if (return_value != IFD_SUCCESS)
 			{
 				/* used by GemCore SIM PRO: no card is present */
-				get_ccid_descriptor(reader_index)->dwSlotStatus
-					= IFD_ICC_NOT_PRESENT;
+				if (GEMCORESIMPRO == ccid_descriptor -> readerID)
+					get_ccid_descriptor(reader_index)->dwSlotStatus
+						= IFD_ICC_NOT_PRESENT;
 
 				DEBUG_CRITICAL("PowerUp failed");
 				return_value = IFD_ERROR_POWER_ACTION;
@@ -1396,8 +1397,9 @@ EXTERNAL RESPONSECODE IFDHControl(DWORD Lun, DWORD dwControlCode,
 			unsigned int iBytesReturned;
 
 			iBytesReturned = RxLength;
-			return_value = CmdEscape(reader_index, TxBuffer, TxLength, RxBuffer,
-				&iBytesReturned);
+			/* 30 seconds timeout for long commands */
+			return_value = CmdEscape(reader_index, TxBuffer, TxLength,
+				RxBuffer, &iBytesReturned, 30*1000);
 			*pdwBytesReturned = iBytesReturned;
 		}
 	}
@@ -1439,13 +1441,16 @@ EXTERNAL RESPONSECODE IFDHControl(DWORD Lun, DWORD dwControlCode,
 			iBytesReturned += sizeof(PCSC_TLV_STRUCTURE);
 		}
 
-		/* We can always forward wLcdLayout */
-		pcsc_tlv -> tag = FEATURE_IFD_PIN_PROPERTIES;
-		pcsc_tlv -> length = 0x04; /* always 0x04 */
-		pcsc_tlv -> value = htonl(IOCTL_FEATURE_IFD_PIN_PROPERTIES);
+		/* Provide IFD_PIN_PROPERTIES only for pinpad readers */
+		if (ccid_descriptor -> bPINSupport)
+		{
+			pcsc_tlv -> tag = FEATURE_IFD_PIN_PROPERTIES;
+			pcsc_tlv -> length = 0x04; /* always 0x04 */
+			pcsc_tlv -> value = htonl(IOCTL_FEATURE_IFD_PIN_PROPERTIES);
 
-		pcsc_tlv++;
-		iBytesReturned += sizeof(PCSC_TLV_STRUCTURE);
+			pcsc_tlv++;
+			iBytesReturned += sizeof(PCSC_TLV_STRUCTURE);
+		}
 
 		if ((KOBIL_TRIBANK == readerID)
 			|| (KOBIL_MIDENTITY_VISUAL == readerID))
@@ -1542,7 +1547,7 @@ EXTERNAL RESPONSECODE IFDHControl(DWORD Lun, DWORD dwControlCode,
 			unsigned int len;
 
 			len = sizeof(firmware);
-			ret = CmdEscape(reader_index, cmd, sizeof(cmd), firmware, &len);
+			ret = CmdEscape(reader_index, cmd, sizeof(cmd), firmware, &len, 0);
 
 			if (IFD_SUCCESS == ret)
 			{
@@ -1669,8 +1674,8 @@ EXTERNAL RESPONSECODE IFDHControl(DWORD Lun, DWORD dwControlCode,
 
 			/* we just transmit the buffer as a CCID Escape command */
 			iBytesReturned = RxLength;
-			return_value = CmdEscape(reader_index, TxBuffer, TxLength, RxBuffer,
-				&iBytesReturned);
+			return_value = CmdEscape(reader_index, TxBuffer, TxLength,
+				RxBuffer, &iBytesReturned, 0);
 			*pdwBytesReturned = iBytesReturned;
 		}
 	}
@@ -1707,8 +1712,11 @@ EXTERNAL RESPONSECODE IFDHICCPresence(DWORD Lun)
 
 	ccid_descriptor = get_ccid_descriptor(reader_index);
 
-	if (GEMCORESIMPRO == ccid_descriptor->readerID)
+	if ((GEMCORESIMPRO == ccid_descriptor->readerID)
+	     && (ccid_descriptor->IFD_bcdDevice < 0x0200))
 	{
+		/* GemCore SIM Pro firmware 2.00 and up features
+		 * a full independant second slot */
 		return_value = ccid_descriptor->dwSlotStatus;
 		goto end;
 	}
@@ -1791,7 +1799,7 @@ EXTERNAL RESPONSECODE IFDHICCPresence(DWORD Lun)
 		if (! (LogLevel & DEBUG_LEVEL_PERIODIC))
 			LogLevel &= ~DEBUG_LEVEL_COMM;
 
-		ret = CmdEscape(reader_index, cmd, sizeof(cmd), res, &length_res);
+		ret = CmdEscape(reader_index, cmd, sizeof(cmd), res, &length_res, 0);
 
 		/* set back the old LogLevel */
 		LogLevel = oldLogLevel;
