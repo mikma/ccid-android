@@ -47,6 +47,7 @@ include $(CLEAR_VARS)
 LOCAL_C_INCLUDES := \
 
 LOCAL_SRC_FILES:= \
+        examples/PCSCv2part10.c \
         examples/scardcontrol.c \
 
 LOCAL_CFLAGS := \
