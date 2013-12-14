@@ -18,7 +18,7 @@
 */
 
 /*
- * $Id: commands.h 4973 2010-06-01 09:43:29Z rousseau $
+ * $Id: commands.h 6783 2013-10-24 09:36:52Z rousseau $
  */
 
 #define SIZE_GET_SLOT_STATUS 10
@@ -39,7 +39,7 @@ RESPONSECODE SecurePINModify(unsigned int reader_index,
 
 RESPONSECODE CmdEscape(unsigned int reader_index,
 	const unsigned char TxBuffer[], unsigned int TxLength,
-	unsigned char RxBuffer[], unsigned int *RxLength);
+	unsigned char RxBuffer[], unsigned int *RxLength, unsigned int timeout);
 
 RESPONSECODE CmdPowerOff(unsigned int reader_index);
 

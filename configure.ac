@@ -1,15 +1,16 @@
 # Process this file with autoconf to produce a configure script.
 # You may need to use autoconf 2.56 or newer
 
-# $Id: configure.in 6350 2012-06-22 08:53:40Z rousseau $
+# $Id: configure.ac 6795 2013-11-25 18:09:17Z rousseau $
 
 # Require autoconf 2.61
 AC_PREREQ([2.69])
 
-AC_INIT([ccid],[1.4.7])
+AC_INIT([ccid],[1.4.14])
 AC_CONFIG_SRCDIR(src/ifdhandler.c)
 AC_CONFIG_AUX_DIR([.])
-AM_INIT_AUTOMAKE(1.8 dist-bzip2 no-dist-gzip)
+AM_INIT_AUTOMAKE(1.8 dist-bzip2 no-dist-gzip subdir-objects)
+AC_CONFIG_MACRO_DIR([m4])
 
 # silent build by default
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
@@ -100,18 +101,13 @@ AC_ARG_ENABLE(libusb,
 	[ use_libusb="${enableval}" ], [ use_libusb=yes ] )
 
 # check if libusb is used
+LIBUSB_NEEDED_VERSION="1.0.8"
 if test "x$use_libusb" != xno ; then
 	PKG_CHECK_EXISTS([libusb-1.0], [
-	PKG_CHECK_MODULES(LIBUSB, libusb-1.0, [],
+	PKG_CHECK_MODULES(LIBUSB, libusb-1.0 >= $LIBUSB_NEEDED_VERSION, [],
 		[
-			AC_CHECK_PROG([LIBUSBCONFIG], [libusb-config], [yes])
-
-			if test "$LIBUSBCONFIG" = "yes" ; then
-				LIBUSB_CFLAGS="$LIBUSB_CFLAGS `libusb-config --cflags`"
-				LIBUSB_LIBS="$LIBUSB_LIBS `libusb-config --libs`"
-			else
-				AC_MSG_WARN([libusb-config not found.])
-			fi
+		AC_MSG_WARN([install libusb $LIBUSB_NEEDED_VERSION or later])
+		PKG_CHECK_MODULES(LIBUSB, libusb-1.0)
 		])
 	])
 
@@ -164,7 +160,7 @@ AC_ARG_ENABLE(multi-thread,
 	[ multithread="${enableval}" ], [ multithread=yes ] )
 
 if test "${multithread}" != no ; then
-	ACX_PTHREAD(
+	AX_PTHREAD(
 		[ AC_DEFINE(HAVE_PTHREAD, 1,
 			[Define if you have POSIX threads libraries and header files.])
 	   	], [ AC_MSG_ERROR([POSIX thread support required]) ])
@@ -208,6 +204,15 @@ AC_ARG_ENABLE(ccidtwindir,
 	[ccidtwindir="${enableval}"], [ccidtwindir=false])
 if test "${ccidtwindir}" = false ; then
 	ccidtwindir=$usbdropdir/serial
+fi
+
+# --enable-serialconfdir=DIR
+AC_ARG_ENABLE(serialconfdir,
+	AS_HELP_STRING([--enable-serialconfdir=dir],[directory containing
+		serial drivers (default to pcscd config)]),
+	[serialconfdir="${enableval}"], [serialconfdir=false])
+if test "${serialconfdir}" = false ; then
+	serialconfdir=`$PKG_CONFIG libpcsclite --variable=serialconfdir`
 fi
 
 # --disable-pcsclite
@@ -255,6 +260,7 @@ AC_SUBST(ac_aux_dir)
 AC_SUBST(bundle)
 AC_SUBST(usbdropdir)
 AC_SUBST(ccidtwindir)
+AC_SUBST(serialconfdir)
 AS_AC_EXPAND(bindir_exp,$bindir)
 AS_AC_EXPAND(sysconfdir_exp,$sysconfdir)
 
@@ -293,6 +299,7 @@ bundle directory name:   ${bundle}
 USB drop directory:      ${usbdropdir}
 serial Twin support:     ${twinserial}
 serial twin install dir: ${ccidtwindir}
+serial config directory: ${serialconfdir}
 compiled for pcsc-lite:  ${pcsclite}
 class driver:            ${class}
 
@@ -300,7 +307,6 @@ EOF
 
 # Write Makefiles.
 AC_CONFIG_FILES(Makefile
-	m4/Makefile
 	src/Makefile
 	readers/Makefile
 	contrib/Makefile

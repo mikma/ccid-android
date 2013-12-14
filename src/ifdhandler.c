@@ -17,7 +17,7 @@
 	Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-/* $Id: ifdhandler.c 6308 2012-05-19 08:20:04Z rousseau $ */
+/* $Id: ifdhandler.c 6790 2013-11-25 10:02:35Z rousseau $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -126,24 +126,33 @@ static RESPONSECODE CreateChannelByNameOrChannel(DWORD Lun,
 	{
 		unsigned char pcbuffer[SIZE_GET_SLOT_STATUS];
 		unsigned int oldReadTimeout;
+		RESPONSECODE cmd_ret;
 		_ccid_descriptor *ccid_descriptor = get_ccid_descriptor(reader_index);
 
 		/* Maybe we have a special treatment for this reader */
 		(void)ccid_open_hack_pre(reader_index);
-
-		/* save the current read timeout computed from card capabilities */
-		oldReadTimeout = ccid_descriptor->readTimeout;
-
-		/* 1000ms just to resync the USB toggle bits */
-		ccid_descriptor->readTimeout = 1000;
 
 		/* Try to access the reader */
 		/* This "warm up" sequence is sometimes needed when pcscd is
 		 * restarted with the reader already connected. We get some
 		 * "usb_bulk_read: Resource temporarily unavailable" on the first
 		 * few tries. It is an empirical hack */
+
+		/* The reader may have to start here so give it some time */
+		cmd_ret = CmdGetSlotStatus(reader_index, pcbuffer);
+		if (IFD_NO_SUCH_DEVICE == cmd_ret)
+		{
+			return_value = cmd_ret;
+			goto error;
+		}
+
+		/* save the current read timeout computed from card capabilities */
+		oldReadTimeout = ccid_descriptor->readTimeout;
+
+		/* 100 ms just to resync the USB toggle bits */
+		ccid_descriptor->readTimeout = 100;
+
 		if ((IFD_COMMUNICATION_ERROR == CmdGetSlotStatus(reader_index, pcbuffer))
-			&& (IFD_COMMUNICATION_ERROR == CmdGetSlotStatus(reader_index, pcbuffer))
 			&& (IFD_COMMUNICATION_ERROR == CmdGetSlotStatus(reader_index, pcbuffer)))
 		{
 			DEBUG_CRITICAL("failed");
@@ -151,9 +160,6 @@ static RESPONSECODE CreateChannelByNameOrChannel(DWORD Lun,
 		}
 		else
 		{
-			/* set back the old timeout */
-			ccid_descriptor->readTimeout = oldReadTimeout;
-
 			/* Maybe we have a special treatment for this reader */
 			return_value = ccid_open_hack_post(reader_index);
 			if (return_value != IFD_SUCCESS)
@@ -161,6 +167,9 @@ static RESPONSECODE CreateChannelByNameOrChannel(DWORD Lun,
 				DEBUG_CRITICAL("failed");
 			}
 		}
+
+		/* set back the old timeout */
+		ccid_descriptor->readTimeout = oldReadTimeout;
 	}
 
 error:
@@ -500,10 +509,6 @@ EXTERNAL RESPONSECODE IFDHGetCapabilities(DWORD Lun, DWORD Tag,
 
 				ccid_desc = get_ccid_descriptor(reader_index);
 
-				/* more than one slot is not supported */
-				if (ccid_desc -> bMaxSlotIndex > 0)
-					break;
-
 				/* CCID and not ICCD */
 				if ((PROTOCOL_CCID == ccid_desc -> bInterfaceProtocol)
 					/* 3 end points */
@@ -673,7 +678,10 @@ EXTERNAL RESPONSECODE IFDHSetProtocolParameters(DWORD Lun, DWORD Protocol,
 	/* Do not send CCID command SetParameters or PPS to the CCID
 	 * The CCID will do this himself */
 	if (ccid_desc->dwFeatures & CCID_CLASS_AUTO_PPS_PROP)
+	{
+		DEBUG_COMM2("Timeout: %d ms", ccid_desc->readTimeout);
 		goto end;
+	}
 
 	/* Get ATR of the card */
 	(void)ATR_InitFromArray(&atr, ccid_slot->pcATRBuffer,
@@ -1174,8 +1182,9 @@ EXTERNAL RESPONSECODE IFDHPowerICC(DWORD Lun, DWORD Action,
 			if (return_value != IFD_SUCCESS)
 			{
 				/* used by GemCore SIM PRO: no card is present */
-				get_ccid_descriptor(reader_index)->dwSlotStatus
-					= IFD_ICC_NOT_PRESENT;
+				if (GEMCORESIMPRO == ccid_descriptor -> readerID)
+					get_ccid_descriptor(reader_index)->dwSlotStatus
+						= IFD_ICC_NOT_PRESENT;
 
 				DEBUG_CRITICAL("PowerUp failed");
 				return_value = IFD_ERROR_POWER_ACTION;
@@ -1388,8 +1397,9 @@ EXTERNAL RESPONSECODE IFDHControl(DWORD Lun, DWORD dwControlCode,
 			unsigned int iBytesReturned;
 
 			iBytesReturned = RxLength;
-			return_value = CmdEscape(reader_index, TxBuffer, TxLength, RxBuffer,
-				&iBytesReturned);
+			/* 30 seconds timeout for long commands */
+			return_value = CmdEscape(reader_index, TxBuffer, TxLength,
+				RxBuffer, &iBytesReturned, 30*1000);
 			*pdwBytesReturned = iBytesReturned;
 		}
 	}
@@ -1397,7 +1407,10 @@ EXTERNAL RESPONSECODE IFDHControl(DWORD Lun, DWORD dwControlCode,
 	/* Implement the PC/SC v2.02.07 Part 10 IOCTL mechanism */
 
 	/* Query for features */
-	if (CM_IOCTL_GET_FEATURE_REQUEST == dwControlCode)
+	/* 0x313520 is the Windows value for SCARD_CTL_CODE(3400)
+	 * This hack is needed for RDP applications */
+	if ((CM_IOCTL_GET_FEATURE_REQUEST == dwControlCode)
+		|| (0x313520 == dwControlCode))
 	{
 		unsigned int iBytesReturned = 0;
 		PCSC_TLV_STRUCTURE *pcsc_tlv = (PCSC_TLV_STRUCTURE *)RxBuffer;
@@ -1428,13 +1441,16 @@ EXTERNAL RESPONSECODE IFDHControl(DWORD Lun, DWORD dwControlCode,
 			iBytesReturned += sizeof(PCSC_TLV_STRUCTURE);
 		}
 
-		/* We can always forward wLcdLayout */
-		pcsc_tlv -> tag = FEATURE_IFD_PIN_PROPERTIES;
-		pcsc_tlv -> length = 0x04; /* always 0x04 */
-		pcsc_tlv -> value = htonl(IOCTL_FEATURE_IFD_PIN_PROPERTIES);
+		/* Provide IFD_PIN_PROPERTIES only for pinpad readers */
+		if (ccid_descriptor -> bPINSupport)
+		{
+			pcsc_tlv -> tag = FEATURE_IFD_PIN_PROPERTIES;
+			pcsc_tlv -> length = 0x04; /* always 0x04 */
+			pcsc_tlv -> value = htonl(IOCTL_FEATURE_IFD_PIN_PROPERTIES);
 
-		pcsc_tlv++;
-		iBytesReturned += sizeof(PCSC_TLV_STRUCTURE);
+			pcsc_tlv++;
+			iBytesReturned += sizeof(PCSC_TLV_STRUCTURE);
+		}
 
 		if ((KOBIL_TRIBANK == readerID)
 			|| (KOBIL_MIDENTITY_VISUAL == readerID))
@@ -1531,7 +1547,7 @@ EXTERNAL RESPONSECODE IFDHControl(DWORD Lun, DWORD dwControlCode,
 			unsigned int len;
 
 			len = sizeof(firmware);
-			ret = CmdEscape(reader_index, cmd, sizeof(cmd), firmware, &len);
+			ret = CmdEscape(reader_index, cmd, sizeof(cmd), firmware, &len, 0);
 
 			if (IFD_SUCCESS == ret)
 			{
@@ -1658,8 +1674,8 @@ EXTERNAL RESPONSECODE IFDHControl(DWORD Lun, DWORD dwControlCode,
 
 			/* we just transmit the buffer as a CCID Escape command */
 			iBytesReturned = RxLength;
-			return_value = CmdEscape(reader_index, TxBuffer, TxLength, RxBuffer,
-				&iBytesReturned);
+			return_value = CmdEscape(reader_index, TxBuffer, TxLength,
+				RxBuffer, &iBytesReturned, 0);
 			*pdwBytesReturned = iBytesReturned;
 		}
 	}
@@ -1696,8 +1712,11 @@ EXTERNAL RESPONSECODE IFDHICCPresence(DWORD Lun)
 
 	ccid_descriptor = get_ccid_descriptor(reader_index);
 
-	if (GEMCORESIMPRO == ccid_descriptor->readerID)
+	if ((GEMCORESIMPRO == ccid_descriptor->readerID)
+	     && (ccid_descriptor->IFD_bcdDevice < 0x0200))
 	{
+		/* GemCore SIM Pro firmware 2.00 and up features
+		 * a full independant second slot */
 		return_value = ccid_descriptor->dwSlotStatus;
 		goto end;
 	}
@@ -1780,7 +1799,7 @@ EXTERNAL RESPONSECODE IFDHICCPresence(DWORD Lun)
 		if (! (LogLevel & DEBUG_LEVEL_PERIODIC))
 			LogLevel &= ~DEBUG_LEVEL_COMM;
 
-		ret = CmdEscape(reader_index, cmd, sizeof(cmd), res, &length_res);
+		ret = CmdEscape(reader_index, cmd, sizeof(cmd), res, &length_res, 0);
 
 		/* set back the old LogLevel */
 		LogLevel = oldLogLevel;
@@ -1917,7 +1936,6 @@ void extra_egt(ATR_t *atr, _ccid_descriptor *ccid_desc, DWORD Protocol)
 	unsigned int card_baudrate;
 	unsigned int default_baudrate;
 	double f, d;
-	int i;
 
 	/* if TA1 not present */
 	if (! atr->ib[0][ATR_INTERFACE_BYTE_TA].present)
@@ -1955,6 +1973,8 @@ void extra_egt(ATR_t *atr, _ccid_descriptor *ccid_desc, DWORD Protocol)
 
 		if (SCARD_PROTOCOL_T1 == Protocol)
 		{
+			int i;
+
 			/* TBi (i>2) present? BWI/CWI */
 			for (i=2; i<ATR_MAX_PROTOCOLS; i++)
 			{

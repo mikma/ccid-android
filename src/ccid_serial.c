@@ -20,7 +20,7 @@
  */
 
 /*
- * $Id: ccid_serial.c 6252 2012-03-27 12:58:12Z rousseau $
+ * $Id: ccid_serial.c 6783 2013-10-24 09:36:52Z rousseau $
  */
 
 #include <stdio.h>
@@ -601,6 +601,7 @@ static status_t set_ccid_descriptor(unsigned int reader_index,
 	serialDevice[reader_index].ccid.dwSlotStatus = IFD_ICC_PRESENT;
 	serialDevice[reader_index].ccid.bVoltageSupport = 0x07;	/* 1.8V, 3V and 5V */
 	serialDevice[reader_index].ccid.gemalto_firmware_features = NULL;
+	serialDevice[reader_index].ccid.zlp = FALSE;
 	serialDevice[reader_index].echo = TRUE;
 
 	/* change some values depending on the reader */
@@ -759,18 +760,13 @@ status_t OpenSerialByName(unsigned int reader_index, char *dev_name)
 		unsigned int rx_length = sizeof(rx_buffer);
 
 		/* 2 seconds timeout to not wait too long if no reader is connected */
-		serialDevice[reader].ccid.readTimeout = 2*1000;
-
 		if (IFD_SUCCESS != CmdEscape(reader_index, tx_buffer, sizeof(tx_buffer),
-			rx_buffer, &rx_length))
+			rx_buffer, &rx_length, 2*1000))
 		{
 			DEBUG_CRITICAL("Get firmware failed. Maybe the reader is not connected");
 			(void)CloseSerial(reader_index);
 			return STATUS_UNSUCCESSFUL;
 		}
-
-		/* normal timeout: 2 seconds */
-		serialDevice[reader].ccid.readTimeout = DEFAULT_COM_READ_TIMEOUT ;
 
 		rx_buffer[rx_length] = '\0';
 		DEBUG_INFO2("Firmware: %s", rx_buffer);
@@ -785,7 +781,7 @@ status_t OpenSerialByName(unsigned int reader_index, char *dev_name)
 		unsigned int rx_length = sizeof(rx_buffer);
 
 		if (IFD_SUCCESS != CmdEscape(reader_index, tx_buffer, sizeof(tx_buffer),
-			rx_buffer, &rx_length))
+			rx_buffer, &rx_length, 0))
 		{
 			DEBUG_CRITICAL("Change card movement notification failed.");
 			(void)CloseSerial(reader_index);

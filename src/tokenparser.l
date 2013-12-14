@@ -8,7 +8,7 @@
  * Copyright (C) 2003-2010
  *  Ludovic Rousseau <ludovic.rousseau@free.fr>
  *
- * $Id: tokenparser.l 6325 2012-06-06 11:54:48Z rousseau $
+ * $Id: tokenparser.l 6712 2013-08-05 19:11:47Z rousseau $
  */
 
 /**
@@ -109,9 +109,9 @@ static void eval_value(char *pcToken, list_t *list_values)
 
 	(void)strlcpy(value, &pcToken[8], len);
 
-	/* convert the firt &amp; into & */
-	amp = strstr(value, "&amp;");
-	if (amp)
+	/* for all &amp; in the string */
+	amp = value;
+	while ((amp = strstr(amp, "&amp;")) != NULL)
 	{
 		char *p;
 
@@ -120,6 +120,11 @@ static void eval_value(char *pcToken, list_t *list_values)
 		{
 			*p = *(p+4);
 		}
+		/* terminate the now shorter string */
+		*p = '\0';
+
+		/* skip the & and continue */
+		amp++;
 	}
 
 	r = list_append(list_values, value);
@@ -200,6 +205,7 @@ int bundleParse(const char *fileName, list_t *l)
 	{
 		(void)yylex();
 	} while (!feof(file));
+	yylex_destroy();
 
 	(void)fclose(file);
 

@@ -19,7 +19,7 @@
 */
 
 /*
- * $Id: commands.c 6311 2012-05-26 15:33:07Z rousseau $
+ * $Id: commands.c 6783 2013-10-24 09:36:52Z rousseau $
  */
 
 #include <string.h>
@@ -245,7 +245,7 @@ again:
 			unsigned int res_length = sizeof(res_tmp);
 
 			if ((return_value = CmdEscape(reader_index, cmd_tmp,
-				sizeof(cmd_tmp), res_tmp, &res_length)) != IFD_SUCCESS)
+				sizeof(cmd_tmp), res_tmp, &res_length, 0)) != IFD_SUCCESS)
 				return return_value;
 
 			/* avoid looping if we can't switch mode */
@@ -455,7 +455,7 @@ RESPONSECODE SecurePINVerify(unsigned int reader_index,
 
 		/* the SPR532 will append the PIN code without any padding */
 		return_value = CmdEscape(reader_index, cmd_tmp, sizeof(cmd_tmp),
-			res_tmp, &res_length);
+			res_tmp, &res_length, 0);
 		if (return_value != IFD_SUCCESS)
 			return return_value;
 
@@ -805,7 +805,7 @@ end:
  ****************************************************************************/
 RESPONSECODE CmdEscape(unsigned int reader_index,
 	const unsigned char TxBuffer[], unsigned int TxLength,
-	unsigned char RxBuffer[], unsigned int *RxLength)
+	unsigned char RxBuffer[], unsigned int *RxLength, unsigned int timeout)
 {
 	unsigned char *cmd_in, *cmd_out;
 	status_t res;
@@ -814,8 +814,12 @@ RESPONSECODE CmdEscape(unsigned int reader_index,
 	int old_read_timeout;
 	_ccid_descriptor *ccid_descriptor = get_ccid_descriptor(reader_index);
 
-	old_read_timeout = ccid_descriptor -> readTimeout;
-	ccid_descriptor -> readTimeout = 30*1000;	/* 30 seconds */
+	/* a value of 0 do not change the default read timeout */
+	if (timeout > 0)
+	{
+		old_read_timeout = ccid_descriptor -> readTimeout;
+		ccid_descriptor -> readTimeout = timeout;
+	}
 
 again:
 	/* allocate buffers */
@@ -855,6 +859,8 @@ again:
 		goto end;
 	}
 
+time_request:
+	length_out = 10 + *RxLength;
 	res = ReadPort(reader_index, &length_out, cmd_out);
 
 	/* replay the command if NAK
@@ -885,6 +891,12 @@ again:
 		goto end;
 	}
 
+	if (cmd_out[STATUS_OFFSET] & CCID_TIME_EXTENSION)
+	{
+		DEBUG_COMM2("Time extension requested: 0x%02X", cmd_out[ERROR_OFFSET]);
+		goto time_request;
+	}
+
 	if (cmd_out[STATUS_OFFSET] & CCID_COMMAND_FAILED)
 	{
 		ccid_error(cmd_out[ERROR_OFFSET], __FILE__, __LINE__, __FUNCTION__);    /* bError */
@@ -901,7 +913,9 @@ again:
 	free(cmd_out);
 
 end:
-	ccid_descriptor -> readTimeout = old_read_timeout;
+	if (timeout > 0)
+		ccid_descriptor -> readTimeout = old_read_timeout;
+
 	return return_value;
 } /* Escape */
 
@@ -1256,10 +1270,10 @@ RESPONSECODE CCID_Receive(unsigned int reader_index, unsigned int *rx_length,
 	unsigned int length;
 	RESPONSECODE return_value = IFD_SUCCESS;
 	status_t ret;
+	_ccid_descriptor *ccid_descriptor = get_ccid_descriptor(reader_index);
+	unsigned int old_timeout;
 
 #ifndef TWIN_SERIAL
-	_ccid_descriptor *ccid_descriptor = get_ccid_descriptor(reader_index);
-
 	if (PROTOCOL_ICCD_A == ccid_descriptor->bInterfaceProtocol)
 	{
 		unsigned char pcbuffer[SIZE_GET_SLOT_STATUS];
@@ -1377,9 +1391,15 @@ time_request_ICCD_B:
 	}
 #endif
 
+	/* store the original value of read timeout*/
+	old_timeout = ccid_descriptor -> readTimeout;
+
 time_request:
 	length = sizeof(cmd);
 	ret = ReadPort(reader_index, &length, cmd);
+
+	/* restore the original value of read timeout */
+	ccid_descriptor -> readTimeout = old_timeout;
 	CHECK_STATUS(ret)
 
 	if (length < STATUS_OFFSET+1)
@@ -1420,6 +1440,12 @@ time_request:
 	if (cmd[STATUS_OFFSET] & CCID_TIME_EXTENSION)
 	{
 		DEBUG_COMM2("Time extension requested: 0x%02X", cmd[ERROR_OFFSET]);
+
+		/* compute the new value of read timeout */
+		if (cmd[ERROR_OFFSET] > 0)
+			ccid_descriptor -> readTimeout *= cmd[ERROR_OFFSET];
+
+		DEBUG_COMM2("New timeout: %d ms", ccid_descriptor -> readTimeout);
 		goto time_request;
 	}
 
@@ -1701,14 +1727,15 @@ static RESPONSECODE T0ProcACK(unsigned int reader_index,
 	unsigned int proc_len, int is_rcv)
 {
 	RESPONSECODE return_value;
-	unsigned int remain_len;
-	unsigned char tmp_buf[512];
 	unsigned int ret_len;
 
 	DEBUG_COMM2("Enter, is_rcv = %d", is_rcv);
 
 	if (is_rcv == 1)
 	{	/* Receiving mode */
+		unsigned int remain_len;
+		unsigned char tmp_buf[512];
+
 		if (*in_len > 0)
 		{	/* There are still available data in our buffer */
 			if (*in_len >= proc_len)
@@ -1908,6 +1935,7 @@ static RESPONSECODE CmdXfrBlockCHAR_T0(unsigned int reader_index,
 			return return_value;
 
 		/* wait for ready */
+		pcbuffer[0] = 0;
 		return_value = CmdGetSlotStatus(reader_index, pcbuffer);
 		if (return_value != IFD_SUCCESS)
 			return return_value;

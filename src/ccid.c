@@ -18,7 +18,7 @@
 */
 
 /*
- * $Id: ccid.c 6274 2012-04-13 13:45:16Z rousseau $
+ * $Id: ccid.c 6783 2013-10-24 09:36:52Z rousseau $
  */
 
 #include <stdio.h>
@@ -33,6 +33,7 @@
 #include "defs.h"
 #include "ccid_ifdhandler.h"
 #include "commands.h"
+#include "utils.h"
 
 #ifdef __APPLE__
 #include <CoreFoundation/CoreFoundation.h>
@@ -63,6 +64,19 @@ int ccid_open_hack_pre(unsigned int reader_index)
 			/* the firmware needs some time to initialize */
 			(void)sleep(1);
 			ccid_descriptor->readTimeout = 60*1000; /* 60 seconds */
+			break;
+
+		case GEMPCTWIN:
+		case GEMPCKEY:
+		case DELLSCRK:
+			/* Only the chipset with firmware version 2.00 is "bogus"
+			 * The reader may send packets of 0 bytes when the reader is
+			 * connected to a USB 3 port */
+			if (0x0200 == ccid_descriptor->IFD_bcdDevice)
+			{
+				ccid_descriptor->zlp = TRUE;
+				DEBUG_INFO("ZLP fixup");
+			}
 			break;
 	}
 
@@ -186,7 +200,7 @@ static void set_gemalto_firmware_features(unsigned int reader_index)
 		RESPONSECODE ret;
 
 		ret = CmdEscape(reader_index, cmd, sizeof cmd,
-			(unsigned char*)gf_features, &len_features);
+			(unsigned char*)gf_features, &len_features, 0);
 		if ((IFD_SUCCESS == ret) &&
 		    (len_features == sizeof *gf_features))
 		{
@@ -228,7 +242,7 @@ int ccid_open_hack_post(unsigned int reader_index)
 				unsigned char res[10];
 				unsigned int length_res = sizeof(res);
 
-				if (CmdEscape(reader_index, cmd, sizeof(cmd), res, &length_res) == IFD_SUCCESS)
+				if (CmdEscape(reader_index, cmd, sizeof(cmd), res, &length_res, 0) == IFD_SUCCESS)
 				{
 					ccid_descriptor->dwFeatures &= ~CCID_CLASS_EXCHANGE_MASK;
 					ccid_descriptor->dwFeatures |= CCID_CLASS_SHORT_APDU;
@@ -413,7 +427,7 @@ int ccid_open_hack_post(unsigned int reader_index)
 				}
 
 				(void)sleep(1);
-				if (IFD_SUCCESS == CmdEscape(reader_index, cmd, sizeof(cmd), res, &length_res))
+				if (IFD_SUCCESS == CmdEscape(reader_index, cmd, sizeof(cmd), res, &length_res, 0))
 				{
 					DEBUG_COMM("l10n string loaded successfully");
 				}
@@ -453,8 +467,8 @@ int ccid_open_hack_post(unsigned int reader_index)
 				unsigned char res[20];
 				unsigned int length_res = sizeof(res);
 
-				if ((IFD_SUCCESS == CmdEscape(reader_index, cmd1, sizeof(cmd1), res, &length_res))
-					&& (IFD_SUCCESS == CmdEscape(reader_index, cmd2, sizeof(cmd2), res, &length_res)))
+				if ((IFD_SUCCESS == CmdEscape(reader_index, cmd1, sizeof(cmd1), res, &length_res, 0))
+					&& (IFD_SUCCESS == CmdEscape(reader_index, cmd2, sizeof(cmd2), res, &length_res, 0)))
 				{
 					DEBUG_COMM("SCM SCR331-DI contactless detected");
 				}

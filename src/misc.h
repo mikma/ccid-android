@@ -6,7 +6,7 @@
  * Copyright (C) 2005-2010
  *  Ludovic Rousseau <ludovic.rousseau@free.fr>
  *
- * $Id: misc.h 5434 2010-12-08 14:13:21Z rousseau $
+ * $Id: misc.h 6758 2013-10-01 12:55:58Z rousseau $
  */
 
 #ifndef __misc_h__
@@ -53,6 +53,10 @@
 
 #ifndef min
 #define min(a,b) (((a) < (b)) ? (a) : (b))
+#endif
+
+#ifndef COUNT_OF
+#define COUNT_OF(arr) (sizeof(arr)/sizeof(arr[0]))
 #endif
 
 #endif /* __misc_h__ */
