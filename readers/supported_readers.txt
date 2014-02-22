@@ -1,6 +1,6 @@
 #
 # List of readers supported by the CCID driver
-# Generated: 2013-11-25
+# Generated: 2014-02-08
 #
 # DO NOT EDIT BY HAND
 
@@ -201,8 +201,11 @@
 0x0982:0x0008:COVADIS VEGA-ALPHA
 0x0982:0x0040:COVADIS Auriga
 
-# Dectel
-0x0BDA:0x0165:Dectel CI692
+# DUALi
+0x1DB2:0x088B:DUALi DRAGON NFC READER
+
+# Feitian
+0x096E:0x061A:Feitian bR301
 
 # Feitian Technologies
 0x096E:0x0505:Feitian Technologies FT SCR310
@@ -231,6 +234,7 @@
 0x08E6:0x3479:Gemplus GemCore POS Pro Smart Card Reader
 
 # Generic
+0x0BDA:0x0165:Generic Smart Card Reader Interface
 0x0BDA:0x0169:Generic USB2.0-CRW
 
 # German Privacy Foundation
@@ -265,6 +269,9 @@
 0x04E6:0x5720:Identive Identive CLOUD 4500 F Dual Interface Reader
 0x04E6:0x5721:Identive Identive CLOUD 4510 F Contactless + SAM Reader
 0x04E6:0x5810:Identive CLOUD 2700 R Smart Card Reader
+
+# IIT
+0x03EB:0x9324:IIT E.Key Almaz-1C
 
 # Inside Secure
 0x2406:0x6300:Inside Secure VaultIC 420 Smart Object
@@ -424,6 +431,7 @@
 0x1A44:0x0122:VASCO DIGIPASS KEY 202
 0x1A44:0x0855:VASCO DP855
 0x1A44:0x0865:VASCO DP865
+0x1A44:0x0870:VASCO DIGIPASS 870
 0x1A44:0x0920:VASCO DIGIPASS 920
 
 # VMware
@@ -554,6 +562,9 @@
 #0x08E6:0x3478:Gemalto USB GemPCPinpad SmartCard Reader (GemPCPinpad.txt)
 #0x08E6:0x3478:Gemalto USB GemPCPinpad SmartCard Reader (GemPCPinpadv2.txt)
 
+#0x08E6:0x34C0:Gemalto Ezio Shield (Gemalto_Ezio_Shield.txt)
+#0x08E6:0x34C0:Gemalto Ezio Shield Pro SC (Gemalto_Ezio_Shield_Pro_SC.txt)
+
 #0x08E6:0x5503:Gemalto Prox Dual USB PC LinkReader (GemProxDU.txt)
 #0x08E6:0x5503:Gemalto Prox Dual USB PC LinkReader (GemProxDU.txt_i1)
 
@@ -575,4 +586,7 @@
 
 #0x0F14:0x003D:Ingenico WITEO USB Smart Card Reader (Ingenico_WITEO_badge.txt)
 #0x0F14:0x003D:Ingenico WITEO USB Smart Card Reader (Ingenico_WITEO_base.txt)
+
+#0x1DB2:0x088B:DUALi DRAGON NFC READER (DUALi_DRAGON_NFC_READER.txt)
+#0x1DB2:0x088B:DUALi DRAGON NFC READER (DUALi_DRAGON_NFC_READER.txt_i1)
 

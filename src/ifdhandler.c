@@ -17,7 +17,7 @@
 	Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-/* $Id: ifdhandler.c 6790 2013-11-25 10:02:35Z rousseau $ */
+/* $Id: ifdhandler.c 6819 2014-01-07 14:12:27Z rousseau $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -1488,13 +1488,31 @@ EXTERNAL RESPONSECODE IFDHControl(DWORD Lun, DWORD dwControlCode,
 	if (IOCTL_FEATURE_IFD_PIN_PROPERTIES == dwControlCode)
 	{
 		PIN_PROPERTIES_STRUCTURE *caps = (PIN_PROPERTIES_STRUCTURE *)RxBuffer;
+		int validation;
 
 		if (RxLength < sizeof(PIN_PROPERTIES_STRUCTURE))
 			return IFD_ERROR_INSUFFICIENT_BUFFER;
 
 		/* Only give the LCD size for now */
 		caps -> wLcdLayout = ccid_descriptor -> wLcdLayout;
-		caps -> bEntryValidationCondition = 0x07; /* Default */
+
+		/* Hardcoded special reader cases */
+		switch (ccid_descriptor->readerID)
+		{
+			case GEMPCPINPAD:
+			case VEGAALPHA:
+			case CHERRYST2000:
+				validation = 0x02; /* Validation key pressed */
+				break;
+			default:
+				validation = 0x07; /* Default */
+		}
+
+		/* Gemalto readers providing firmware features */
+		if (ccid_descriptor -> gemalto_firmware_features)
+			validation = ccid_descriptor -> gemalto_firmware_features -> bEntryValidationCondition;
+
+		caps -> bEntryValidationCondition = validation;
 		caps -> bTimeOut2 = 0x00; /* We do not distinguish bTimeOut from TimeOut2 */
 
 		*pdwBytesReturned = sizeof(*caps);
@@ -1559,7 +1577,8 @@ EXTERNAL RESPONSECODE IFDHControl(DWORD Lun, DWORD dwControlCode,
 		}
 
 		/* Gemalto PC Pinpad V1 */
-		if ((GEMPCPINPAD == ccid_descriptor -> readerID)
+		if (((GEMPCPINPAD == ccid_descriptor -> readerID)
+			&& (0x0100 == ccid_descriptor -> IFD_bcdDevice))
 			/* Covadis Véga-Alpha */
 			|| (VEGAALPHA == ccid_descriptor->readerID))
 		{
@@ -1577,6 +1596,46 @@ EXTERNAL RESPONSECODE IFDHControl(DWORD Lun, DWORD dwControlCode,
 			RxBuffer[p++] = PCSCv2_PART10_PROPERTY_bEntryValidationCondition;
 			RxBuffer[p++] = 1;	/* length */
 			RxBuffer[p++] = 0x02;	/* validation key pressed */
+		}
+
+		/* Cherry GmbH SmartTerminal ST-2xxx */
+		if (CHERRYST2000 == ccid_descriptor -> readerID)
+		{
+			/* bMinPINSize */
+			RxBuffer[p++] = PCSCv2_PART10_PROPERTY_bMinPINSize;
+			RxBuffer[p++] = 1;	/* length */
+			RxBuffer[p++] = 0;	/* min PIN size */
+
+			/* bMaxPINSize */
+			RxBuffer[p++] = PCSCv2_PART10_PROPERTY_bMaxPINSize;
+			RxBuffer[p++] = 1;	/* length */
+			RxBuffer[p++] = 25;	/* max PIN size */
+
+			/* bEntryValidationCondition */
+			RxBuffer[p++] = PCSCv2_PART10_PROPERTY_bEntryValidationCondition;
+			RxBuffer[p++] = 1;	/* length */
+			RxBuffer[p++] = 0x02;	/* validation key pressed */
+		}
+
+		/* Gemalto readers providing firmware features */
+		if (ccid_descriptor -> gemalto_firmware_features)
+		{
+			struct GEMALTO_FIRMWARE_FEATURES *features = ccid_descriptor -> gemalto_firmware_features;
+
+			/* bMinPINSize */
+			RxBuffer[p++] = PCSCv2_PART10_PROPERTY_bMinPINSize;
+			RxBuffer[p++] = 1;	/* length */
+			RxBuffer[p++] = features -> MinimumPINSize;	/* min PIN size */
+
+			/* bMaxPINSize */
+			RxBuffer[p++] = PCSCv2_PART10_PROPERTY_bMaxPINSize;
+			RxBuffer[p++] = 1;	/* length */
+			RxBuffer[p++] = features -> MaximumPINSize;	/* max PIN size */
+
+			/* bEntryValidationCondition */
+			RxBuffer[p++] = PCSCv2_PART10_PROPERTY_bEntryValidationCondition;
+			RxBuffer[p++] = 1;	/* length */
+			RxBuffer[p++] = features -> bEntryValidationCondition;	/* validation key pressed */
 		}
 
 		/* bPPDUSupport */

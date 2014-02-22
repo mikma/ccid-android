@@ -491,14 +491,40 @@ char *yytext;
  * Copyright (C) 2003-2010
  *  Ludovic Rousseau <ludovic.rousseau@free.fr>
  *
- * $Id: tokenparser.l 6712 2013-08-05 19:11:47Z rousseau $
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+3. The name of the author may not be used to endorse or promote products
+   derived from this software without specific prior written permission.
+
+Changes to this license can be made only by the copyright author with
+explicit written consent.
+
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * $Id: tokenparser.l 6822 2014-01-13 15:21:25Z rousseau $
  */
 /**
  * @file
  * @brief provides parsing functions for Info.plist files
  * platforms
  */
-#line 21 "tokenparser.l"
+#line 47 "tokenparser.l"
 
 #include "config.h"
 #include <stdio.h>
@@ -520,7 +546,7 @@ static list_t *ListKeys;
 static list_t *ListValues;
 
 #define YY_NO_INPUT 1
-#line 524 "tokenparser.c"
+#line 550 "tokenparser.c"
 
 #define INITIAL 0
 
@@ -705,10 +731,10 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 47 "tokenparser.l"
+#line 73 "tokenparser.l"
 
 
-#line 712 "tokenparser.c"
+#line 738 "tokenparser.c"
 
 	if ( !(yy_init) )
 		{
@@ -793,41 +819,41 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 49 "tokenparser.l"
+#line 75 "tokenparser.l"
 {}
 	YY_BREAK
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 50 "tokenparser.l"
+#line 76 "tokenparser.l"
 {}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 51 "tokenparser.l"
+#line 77 "tokenparser.l"
 { eval_key(yytext, ListKeys); }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 52 "tokenparser.l"
+#line 78 "tokenparser.l"
 {}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 53 "tokenparser.l"
+#line 79 "tokenparser.l"
 { eval_value(yytext, ListValues); }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 54 "tokenparser.l"
+#line 80 "tokenparser.l"
 { tperrorCheck(yytext); }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 55 "tokenparser.l"
+#line 81 "tokenparser.l"
 ECHO;
 	YY_BREAK
-#line 831 "tokenparser.c"
+#line 857 "tokenparser.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1788,7 +1814,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 55 "tokenparser.l"
+#line 81 "tokenparser.l"
 
 
 
