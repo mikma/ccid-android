@@ -18,7 +18,7 @@
 */
 
 /*
- * $Id: ccid.c 6783 2013-10-24 09:36:52Z rousseau $
+ * $Id: ccid.c 6845 2014-02-14 09:16:01Z rousseau $
  */
 
 #include <stdio.h>
@@ -427,7 +427,7 @@ int ccid_open_hack_post(unsigned int reader_index)
 				}
 
 				(void)sleep(1);
-				if (IFD_SUCCESS == CmdEscape(reader_index, cmd, sizeof(cmd), res, &length_res, 0))
+				if (IFD_SUCCESS == CmdEscape(reader_index, cmd, sizeof(cmd), res, &length_res, DEFAULT_COM_READ_TIMEOUT))
 				{
 					DEBUG_COMM("l10n string loaded successfully");
 				}
@@ -441,6 +441,7 @@ int ccid_open_hack_post(unsigned int reader_index)
 
 		case HPSMARTCARDKEYBOARD:
 		case HP_CCIDSMARTCARDKEYBOARD:
+		case FUJITSUSMARTKEYB:
 			/* the Secure Pin Entry is bogus so disable it
 			 * http://martinpaljak.net/2011/03/19/insecure-hp-usb-smart-card-keyboard/
 			 */

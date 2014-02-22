@@ -18,7 +18,7 @@
 */
 
 /*
- * $Id: ccid_usb.c 6793 2013-11-25 13:09:41Z rousseau $
+ * $Id: ccid_usb.c 6828 2014-01-21 17:36:11Z rousseau $
  */
 
 #define __CCID_USB__
@@ -635,7 +635,13 @@ again:
 				usbDevice[reader_index].ccid.bMaxSlotIndex = device_descriptor[4];
 				usbDevice[reader_index].ccid.bCurrentSlotIndex = 0;
 				usbDevice[reader_index].ccid.readTimeout = DEFAULT_COM_READ_TIMEOUT;
-				usbDevice[reader_index].ccid.arrayOfSupportedDataRates = get_data_rates(reader_index, config_desc, num);
+				if (device_descriptor[27])
+					usbDevice[reader_index].ccid.arrayOfSupportedDataRates = get_data_rates(reader_index, config_desc, num);
+				else
+				{
+					usbDevice[reader_index].ccid.arrayOfSupportedDataRates = NULL;
+					DEBUG_INFO("bNumDataRatesSupported is 0");
+				}
 				usbDevice[reader_index].ccid.bInterfaceProtocol = usb_interface->altsetting->bInterfaceProtocol;
 				usbDevice[reader_index].ccid.bNumEndpoints = usb_interface->altsetting->bNumEndpoints;
 				usbDevice[reader_index].ccid.dwSlotStatus = IFD_ICC_PRESENT;
@@ -1006,7 +1012,8 @@ static int get_end_points(struct libusb_config_descriptor *desc,
 		/* CCID Class? */
 		if (desc->interface[i].altsetting->bInterfaceClass == 0xb
 #ifdef ALLOW_PROPRIETARY_CLASS
-			|| desc->interface[i].altsetting->bInterfaceClass == 0xff
+			|| (desc->interface[i].altsetting->bInterfaceClass == 0xff
+			&& 54 == desc->interface[i].altsetting->extra_length)
 #endif
 			)
 		{
