@@ -1,6 +1,6 @@
 #
 # List of readers supported by the CCID driver
-# Generated: 2014-02-08
+# Generated: 2014-03-11
 #
 # DO NOT EDIT BY HAND
 
@@ -201,6 +201,9 @@
 0x0982:0x0008:COVADIS VEGA-ALPHA
 0x0982:0x0040:COVADIS Auriga
 
+# Crypto Stick
+0x20A0:0x4108:Crypto Stick Crypto Stick v1.4
+
 # DUALi
 0x1DB2:0x088B:DUALi DRAGON NFC READER
 
@@ -254,6 +257,7 @@
 0x1677:0x0025:HDZB uKeyCI800-K18
 
 # Hewlett Packard
+0x03F0:0x104A:Hewlett Packard HP USB Smartcard CCID Keyboard
 0x03F0:0x2924:Hewlett Packard MFP Smart Card Reader
 
 # HID OMNIKEY
@@ -270,6 +274,9 @@
 0x04E6:0x5721:Identive Identive CLOUD 4510 F Contactless + SAM Reader
 0x04E6:0x5810:Identive CLOUD 2700 R Smart Card Reader
 
+# IID
+0x2406:0x6200:IID AT90S064 CCID READER
+
 # IIT
 0x03EB:0x9324:IIT E.Key Almaz-1C
 
@@ -280,6 +287,10 @@
 0x2406:0x6403:Inside Secure AT90SCR100
 0x2406:0x6404:Inside Secure AT90SCR050
 0x2406:0x6407:Inside Secure AT90SCR200
+
+# INSIDE Secure
+0x2406:0x6303:INSIDE Secure VaultIC 405 Smart Object
+0x2406:0x6305:INSIDE Secure VaultIC 441 Smart Object
 
 # KEBTechnology
 0x04CC:0x5072:KEBTechnology KONA USB SmartCard
@@ -301,6 +312,10 @@
 
 # Macally
 0x08AE:0x0BDF:Macally NFC CCID eNetPad
+
+# Microchip
+0x0424:0x1104:Microchip SEC1110
+0x0424:0x1202:Microchip SEC1210
 
 # Morpho
 0x079B:0x0026:Morpho MSO350/MSO351 Fingerprint Sensor & SmartCard Reader
@@ -437,6 +452,9 @@
 # VMware
 0x0E0F:0x0004:VMware Virtual USB CCID
 
+# Watchdata W5181
+0x163C:0x0A03:Watchdata W5181 
+
 # Winbond
 0x0416:0x3815:Winbond CCID SmartCard Controller
 
@@ -518,6 +536,9 @@
 ##########################
 # section: duplicates
 ##########################
+#0x0424:0x1202:Microchip SEC1210 (Microchip_SEC1210.txt)
+#0x0424:0x1202:Microchip SEC1210 (Microchip_SEC1210.txt_i1)
+
 #0x04E6:0x5291:SCM Microsystems Inc. SCL010 Contactless Reader (SCL010.txt)
 #0x04E6:0x5291:SCM Microsystems Inc. SCL010 Contactless Reader (SCM_SCL010.txt)
 
@@ -586,6 +607,10 @@
 
 #0x0F14:0x003D:Ingenico WITEO USB Smart Card Reader (Ingenico_WITEO_badge.txt)
 #0x0F14:0x003D:Ingenico WITEO USB Smart Card Reader (Ingenico_WITEO_base.txt)
+
+#0x163C:0x0A03:Watchdata W5181  (Watchdata_W5181.txt)
+#0x163C:0x0A03:Watchdata W5181  (Watchdata_W5181.txt_i1)
+#0x163C:0x0A03:Watchdata W5181  (Watchdata_W5181.txt_i2)
 
 #0x1DB2:0x088B:DUALi DRAGON NFC READER (DUALi_DRAGON_NFC_READER.txt)
 #0x1DB2:0x088B:DUALi DRAGON NFC READER (DUALi_DRAGON_NFC_READER.txt_i1)

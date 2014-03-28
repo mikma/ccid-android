@@ -193,7 +193,7 @@ int t1_transceive(t1_state_t * t1, unsigned int dad,
 		{
 			DEBUG_COMM("Parity error");
 			/* ISO 7816-3 Rule 7.4.2 */
-			if (retries == 0)
+			if (retries <= 0)
 				goto resync;
 
 			/* ISO 7816-3 Rule 7.2 */
@@ -221,7 +221,7 @@ int t1_transceive(t1_state_t * t1, unsigned int dad,
 		{
 			DEBUG_COMM("R-BLOCK required");
 			/* ISO 7816-3 Rule 7.4.2 */
-			if (retries == 0)
+			if (retries <= 0)
 				goto resync;
 
 			/* ISO 7816-3 Rule 7.2 */
@@ -241,7 +241,7 @@ int t1_transceive(t1_state_t * t1, unsigned int dad,
 		if (!t1_verify_checksum(t1, sdata, n)) {
 			DEBUG_COMM("checksum failed");
 			/* ISO 7816-3 Rule 7.4.2 */
-			if (retries == 0)
+			if (retries <= 0)
 				goto resync;
 
 			/* ISO 7816-3 Rule 7.2 */
@@ -267,7 +267,7 @@ int t1_transceive(t1_state_t * t1, unsigned int dad,
 			{
 				DEBUG_COMM("R-Block required");
 				/* ISO 7816-3 Rule 7.4.2 */
-				if (retries == 0)
+				if (retries <= 0)
 					goto resync;
 
 				/* ISO 7816-3 Rule 7.2 */
@@ -292,7 +292,7 @@ int t1_transceive(t1_state_t * t1, unsigned int dad,
 					t1_seq(pcb), t1->ns, t1->more);
 
 				/* ISO 7816-3 Rule 7.4.2 */
-				if (retries == 0)
+				if (retries <= 0)
 					goto resync;
 
 				/* ISO 7816-3 Rule 7.2 */
@@ -314,6 +314,10 @@ int t1_transceive(t1_state_t * t1, unsigned int dad,
 				/* ISO 7816-3 Rule 7.2 */
 				if (T1_R_BLOCK == t1_block_type(t1->previous_block[1]))
 				{
+					/* ISO 7816-3 Rule 7.4.2 */
+					if (retries <= 0)
+						goto resync;
+
 					DEBUG_COMM("Rule 7.2");
 					slen = t1_rebuild(t1, sdata);
 					continue;
@@ -363,7 +367,7 @@ int t1_transceive(t1_state_t * t1, unsigned int dad,
 				DEBUG_COMM("wrong nr");
 
 				/* ISO 7816-3 Rule 7.4.2 */
-				if (retries == 0)
+				if (retries <= 0)
 					goto resync;
 
 				slen = t1_build(t1, sdata, dad,
@@ -404,7 +408,7 @@ int t1_transceive(t1_state_t * t1, unsigned int dad,
 			if (T1_S_IS_RESPONSE(pcb))
 			{
 				/* ISO 7816-3 Rule 7.4.2 */
-				if (retries == 0)
+				if (retries <= 0)
 					goto resync;
 
 				/* ISO 7816-3 Rule 7.2 */
@@ -764,7 +768,7 @@ int t1_negotiate_ifsd(t1_state_t * t1, unsigned int dad, int ifsd)
 
 		retries--;
 		/* ISO 7816-3 Rule 7.4.2 */
-		if (retries == 0)
+		if (retries <= 0)
 			goto error;
 
 		if (-1 == n)
