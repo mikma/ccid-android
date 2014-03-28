@@ -1,3 +1,292 @@
+2014-03-23  Ludovic Rousseau
+
+	* [r6880] README, configure.ac: Release 1.4.16
+	* [r6879] src/commands.c: Fix compiler warning
+	  
+	  commands.c: In function `SecurePINVerify': commands.c:529:9:
+	  warning: variable `n' set but not used
+	  [-Wunused-but-set-variable] int n, oldReadTimeout; ^
+	* [r6878] src/commands.c: Fix compiler warning
+	  
+	  commands.c:511:19: warning: | has lower precedence than ==; ==
+	  will be evaluated first [-Wparentheses] if (T1_S_BLOCK | T1_S_WTX
+	  == RxBuffer[PCB]) ^~~~~~~~~~~~~~~~~~~~~~~~~~~ commands.c:511:19:
+	  note: place parentheses around the '==' expression to silence
+	  this warning if (T1_S_BLOCK | T1_S_WTX == RxBuffer[PCB]) ^
+	  ~~~~~~~~~~~~~~~~~~~~~~~~~ commands.c:511:19: note: place
+	  parentheses around the | expression to evaluate it first if
+	  (T1_S_BLOCK | T1_S_WTX == RxBuffer[PCB]) ~~~~~~~~~~~^~~~~~~~~~ 1
+	  warning generated.
+	* [r6877] src/commands.c: SecurePINVerify: add support of WTX
+	  received before SW
+	  
+	  The Swiss health care card sends a WTX request before returning
+	  the SW code. If the reader is in TPDU and the card is in T=1 the
+	  driver must manage the request itself.
+	* [r6876] src/ccid_ifdhandler.h: Add
+	  DRIVER_OPTION_DISABLE_PIN_RETRIES definition
+	  
+	  This is a missing for revision 6875
+
+2014-03-22  Ludovic Rousseau
+
+	* [r6875] src/Info.plist.src, src/ccid.c: Add support of
+	  DRIVER_OPTION_DISABLE_PIN_RETRIES
+	  
+	  The Gemalto pinpad reader sends a VERIFY command with no PIN
+	  value in order to retreive the remaining retries from the card.
+	  Some cards (like the OpenPGP card) do not support this.
+	  
+	  It is now possible to disable this behavior from the Gemalto
+	  Pinpad and Covadis Véga Alpha.
+	  
+	  Closes Alioth bug
+	  https://alioth.debian.org/tracker/index.php?func=detail&aid=314005&group_id=30105&atid=410088
+	* [r6874] src/ccid_usb.c: InterruptRead(): log the libusb errors
+	  
+	  Allow an easier debug
+
+2014-03-11  Ludovic Rousseau
+
+	* [r6873] readers/IID_AT90S064_CCID_READER.txt,
+	  readers/supported_readers.txt: Add IID AT90S064 CCID READER
+
+2014-03-09  Ludovic Rousseau
+
+	* [r6871] readers/Watchdata_W5181.txt,
+	  readers/supported_readers.txt: Add Watchdata W5181
+
+2014-03-08  Ludovic Rousseau
+
+	* [r6869] src/openct/proto-t1.c: t1_transceive(): add a new test on
+	  retries
+	  
+	  The driver should not send R-blocks infinitely.
+	  
+	  The problem was detected by a T=1 card on a TPDU pinpad reader
+	  with a VERIFY command that send a WTX request before returning
+	  the SW code.
+	* [r6868] src/openct/proto-t1.c: t1_transceive(): check retries is
+	  is positive
+	  
+	  The test was "retries == 0" but it may happen that retries
+	  becomes negative. Then the counter will be decreasing
+	  "indefinitely".
+	  
+	  The new test is "retries <= 0" to also get the negative values
+	  and resync if needed.
+	  
+	  The problem was detected by a T=1 card on a TPDU pinpad reader
+	  with a VERIFY command that send a WTX request before returning
+	  the SW code.
+
+2014-03-07  Ludovic Rousseau
+
+	* [r6866] readers/INSIDE_Secure_VaultIC_441_Smart_Object.txt,
+	  readers/supported_readers.txt: Add INSIDE Secure VaultIC 441
+	  Smart Object
+	* [r6865] readers/INSIDE_Secure_VaultIC_405_Smart_Object.txt,
+	  readers/supported_readers.txt: Add INSIDE Secure VaultIC 405
+	  Smart Object
+	* [r6864] readers/supported_readers.txt: Replace HP by Hewlett
+	  Packard
+
+2014-02-26  Ludovic Rousseau
+
+	* [r6862] NEWS: Indicates the changes are in README.
+
+2014-02-23  Ludovic Rousseau
+
+	* [r6860] readers/Chicony_HP_USB_Smartcard_CCID_Keyboard.txt,
+	  readers/supported_readers.txt: Add HP USB Smartcard CCID Keyboard
+
+2014-02-18  Ludovic Rousseau
+
+	* [r6857] readers/Microchip_SEC1210.txt,
+	  readers/supported_readers.txt: Add Microchip SEC1210
+	* [r6856] readers/Microchip_SEC1110.txt,
+	  readers/supported_readers.txt: Add Microchip SEC1110
+	* [r6855] readers/Crypto_Stick_Crypto_Stick_v1.4.txt,
+	  readers/supported_readers.txt: Add Crypto Stick Crypto Stick v1.4
+
+2014-02-14  Ludovic Rousseau
+
+	* [r6846] README, configure.ac: Release 1.4.15
+	* [r6845] src/ccid.c, src/ccid.h: Disable pinpad for Fujitsu
+	  SmartCase KB SCR eSIG
+	  
+	  Thanks to Maarten for the bug report and patch.
+
+2014-02-08  Ludovic Rousseau
+
+	* [r6839] readers/Feitian_bR301.txt, readers/supported_readers.txt:
+	  Add Feitian bR301
+
+2014-02-03  Ludovic Rousseau
+
+	* [r6835] readers/Gemalto_Ezio_Shield_Pro_SC.txt,
+	  readers/supported_readers.txt: Add Gemalto Ezio Shield Pro SC
+
+2014-01-28  Ludovic Rousseau
+
+	* [r6833] src/reader.conf.in: Remove the optional CHANNELID
+	  
+	  Use DEVICENAME only instead.
+	* [r6832] src/ccid.h, src/ccid_serial.c, src/reader.conf.in: Add
+	  support of Gemalto CR30 reader in serial communication
+	  
+	  The Gemalto CR30 reader is a dual slot reader. The reader can be
+	  connected with a USB cable (normal CCID protocol) or using a
+	  serial cable.
+	  
+	  The serial configuration is made using a special name in
+	  /etc/reader.conf DEVICENAME field like: DEVICENAME
+	  /dev/ttyS0:GemCoreSIMPro2
+	* [r6831] src/ccid_serial.c: set_ccid_descriptor(): initialize
+	  .ccid.readTimeout
+	  
+	  The read timeout was not initialized. I don't know how it was
+	  working.
+
+2014-01-21  Ludovic Rousseau
+
+	* [r6829] readers/Vasco_DIGIPASS_870.txt,
+	  readers/supported_readers.txt: Add VASCO DIGIPASS 870
+	* [r6828] src/ccid_usb.c: get_end_points(): be more strict for
+	  bInterfaceClass = 255
+	  
+	  If the bInterfaceClass is 255 (proprietary) and then not, but
+	  possibly, a CCID interface (on an old reader) we also check the
+	  extra_length is valid for a CCID device.
+	  
+	  The problem was with a composite device with 2 interfaces: one
+	  non-CCID interface with bInterfaceClass = 255 and a CCID
+	  interface with bInterfaceClass = 11. The first non-CCID interface
+	  must be skipped.
+	* [r6827] readers/Aladdin_eToken_PRO_USB_72K_Java.txt: Small update
+
+2014-01-07  Ludovic Rousseau
+
+	* [r6820] src/ccid.c: ccid_open_hack_post(): use default read
+	  timeout for CmdEscape
+	  
+	  Use the default read timeout (DEFAULT_COM_READ_TIMEOUT at 3
+	  seconds) instead of the current value of 100 ms (set in
+	  CreateChannelByNameOrChannel) that is too short to load the l10n
+	  strings in a pinpad reader.
+	* [r6819] src/ifdhandler.c: Support Gemalto features for pinpad
+	  readers
+	  
+	  MinimumPINSize, MaximumPINSize and bEntryValidationCondition are
+	  fetched from the reader firmware. No need to hardcode specific
+	  values anymore.
+	* [r6818] examples/scardcontrol.c: Fix typo in text
+	* [r6817] src/ifdhandler.c: Set specific value of
+	  bEntryValidationCondition for known readers
+	  
+	  Gemalto Pinpad, Covadis Véga-Alpha and Cherry ST2000 readers only
+	  support validation by key pressed.
+	* [r6816] examples/scardcontrol.c: Retrieve
+	  bEntryValidationCondition from the driver
+	  
+	  Use PCSCv2_PART10_PROPERTY_bEntryValidationCondition to know what
+	  validation conditions aer supported by the pinpad.
+	  
+	  Default value is 7 (as before).
+	* [r6815] examples/scardcontrol.c: Check value returned by gets(3)
+	  
+	  Fix compiler warning: scardcontrol.c:649:4: warning: ignoring
+	  return value of ‘fgets’, declared with attribute
+	  warn_unused_result [-Wunused-result]
+	* [r6814] examples/scardcontrol.c: Retrieve min and max PIN sizes
+	  from the driver
+	  
+	  Use PCSCv2_PART10_PROPERTY_bMinPINSize and
+	  PCSCv2_PART10_PROPERTY_bMaxPINSize to know the min and max PIN
+	  sizes.
+	  
+	  If not defined by the driver the default values are 4 for min and
+	  8 for max (as before).
+	* [r6813] examples/scardcontrol.c: Do a PIN verify instead of PIN
+	  modify
+
+2014-01-06  Ludovic Rousseau
+
+	* [r6812] examples/scardcontrol.c: Parse codes returned by a pinpad
+	  (as SW1/SW2).
+	  
+	  Known codes for now are: 0x9000: Success 0x6400: Timeout 0x6401:
+	  Cancelled by user 0x6402: PIN mismatch 0x6403: Too short or too
+	  long PIN
+	* [r6811] src/ifdhandler.c: Add specific PIN min & max sizes for
+	  SmartTerminal ST-2xxx
+	  
+	  The Cherry GmbH SmartTerminal ST-2xxx reader has a min PIN size
+	  of 0 digits and a max PIN size of 25 (0x19) digits.
+	  
+	  Thanks to Dominik Heidler for the bug report
+	  https://github.com/OpenSC/OpenSC/issues/199
+
+2013-12-17  Ludovic Rousseau
+
+	* [r6809] examples/scardcontrol.c: Fix calculation of the command
+	  length
+	  
+	  Since pcsc-lite 1.8.9 (October 2013) the structures
+	  PIN_MODIFY_STRUCTURE and PIN_VERIFY_STRUCTURE are different and
+	  now use a C99 flexible array member when available for abData
+	  field. uint8_t abData[];
+	  
+	  The the sizeof(PIN_VERIFY_STRUCTURE) is one byte smaller and the
+	  calculation of the complete command is now simpler.
+
+2013-12-12  Ludovic Rousseau
+
+	* [r6806] readers/IIT_E.Key_Almaz-1C.txt,
+	  readers/supported_readers.txt: Add IIT E.Key Almaz-1C
+
+2013-12-06  Ludovic Rousseau
+
+	* [r6805] readers/DUALi_DRAGON_NFC_READER.txt,
+	  readers/supported_readers.txt: Add DUALi DRAGON NFC READER
+
+2013-11-26  Ludovic Rousseau
+
+	* [r6801] src/ccid_usb.c: Do not get the data rates if
+	  bNumDataRatesSupported = 0
+	  
+	  According to CCID spec 1.1: " If the value is 00h, all data rates
+	  between the default data rate dwDataRate and the maximum data
+	  rate dwMaxDataRate are supported. "
+	  
+	  Some readers do not support control request 0x03 GET_DATA_RATES
+	  if they declare bNumDataRatesSupported = 0. That should not
+	  generate a critical error.
+	  
+	  This change will fix bug [#314516] Do not log
+	  ccid_usb.c:1142:ControlUSB() control failed (1/4): -9 Success
+	  https://alioth.debian.org/tracker/index.php?func=detail&aid=314516&group_id=30105&atid=410088
+	  
+	  and also fix bug [#313651] Do not call get_data_rates() if
+	  bNumDataRatesSupported is 0
+	  https://alioth.debian.org/tracker/index.php?func=detail&aid=313651&group_id=30105&atid=410088
+	* [r6800] src/ccid_usb.c: Revert revision 6799
+	  
+	  We will use a better way to solve the bug.
+	* [r6799] src/ccid_usb.c: Failing to get the data rates from the
+	  reader is not a critical error
+	  
+	  The reader may not respond to control request 0x03 GET_DATA_RATES
+	  In such a case the CCID driver should not report a critical
+	  error.
+	  
+	  The driver will now report a info level error.o
+	  
+	  Closes alioth bug [#314516] Do not log
+	  ccid_usb.c:1142:ControlUSB() control failed (1/4): -9 Success
+	  https://alioth.debian.org/tracker/index.php?func=detail&aid=314516&group_id=30105&atid=410088
+	* [r6798] src/debug.h: Add DEBUG_INFO5() macro
+
 2013-11-25  Ludovic Rousseau
 
 	* [r6795] README, configure.ac: Release 1.4.14
